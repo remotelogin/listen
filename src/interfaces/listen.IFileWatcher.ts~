@@ -1,0 +1,7 @@
+export interface IFileWatcher {
+
+startlistener() : void;
+
+setWatchFilePath(newPat: string) : void ;
+
+}

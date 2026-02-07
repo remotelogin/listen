@@ -1,0 +1,68 @@
+import { Injectable } from '@nestjs/common';
+import chokidar from 'chokidar';
+import {promises as fs} from 'node:fs';
+
+let file_buffer: String[];
+
+@Injectable()
+export class ListenService {
+
+  private filePath = '/etc/nginx/logs/access.log';
+  
+  setWatchFilePath(newFilePath: string): boolean {
+    this.filePath = newFilePath;
+    return true;
+  }
+  
+  startListener(): void {
+    
+    const watcher = chokidar.watch(this.filePath, {
+      persistent: true,
+      ignoreInitial: true,
+      usePolling: false,
+      atomic: true
+    });
+
+    const events: Array<'change' | 'add'> = ['change','add'];
+    
+    for (const eventType of events) {
+      watcher.on(eventType, async (path) => {
+	try {
+	  await fs.access(path);
+	  
+	  const content = await fs.readFile(path, 'utf8');
+	  console.log(`new request: ${path}:\n`, content);
+	  
+	  //add to db	
+	  
+	} catch (err) {
+	  if (err.code === 'ENOENT') {
+	    console.warn(`file ${path} was deleted before reading`);
+	  } else {
+	    console.error(`error reading ${path}:`, err.message);
+	  }
+	}
+      });
+    };
+    
+    watcher.on('error', (error) => {
+      console.error('Watcher error:', error);
+    });
+    
+    console.log(`Watching ${this.filePath} for updates...`);
+    
+  }
+
+}
+
+@Injectable()
+export class DBConnector {
+  
+  testConnector(): string {
+    
+    return "hi";
+    
+    
+  }
+  
+}
