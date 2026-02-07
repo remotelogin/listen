@@ -17,7 +17,6 @@ let ListenController = class ListenController {
     constructor(listenService) {
         this.listenService = listenService;
         this.listenService.setWatchFilePath("/etc/nginx/logs/access.log");
-        this.listenService.startListener();
     }
 };
 exports.ListenController = ListenController;

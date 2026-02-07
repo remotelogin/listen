@@ -5,9 +5,6 @@ import { ListenService } from '../services/listen.service';
 export class ListenController {
   
   constructor(private readonly listenService: ListenService) {
-    
-    this.listenService.setWatchFilePath("/etc/nginx/logs/access.log");
-    this.listenService.startListener();
-    
+    this.listenService.setWatchFilePath("/etc/nginx/logs/access.log"); 
   }
 }

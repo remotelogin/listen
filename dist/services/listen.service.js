@@ -5,18 +5,31 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DBConnector = exports.ListenService = void 0;
+exports.ListenService = void 0;
 const common_1 = require("@nestjs/common");
 const chokidar_1 = __importDefault(require("chokidar"));
 const node_fs_1 = require("node:fs");
+const listen_DBConnector_1 = require("./listen.DBConnector");
 let file_buffer;
 let ListenService = class ListenService {
+    db;
     filePath = '/etc/nginx/logs/access.log';
     number_of_lines = 0;
+    constructor(db) {
+        this.db = db;
+        db.setCredentials("", "", "", 1337, "");
+        db.connectToBackend();
+    }
+    onModuleInit() {
+        this.startListener();
+    }
     setWatchFilePath(newFilePath) {
         this.filePath = newFilePath;
         return true;
@@ -38,6 +51,7 @@ let ListenService = class ListenService {
                     this.number_of_lines = lines.length - 1;
                     let last_line = lines[this.number_of_lines - 1];
                     console.log("new request: " + last_line);
+                    this.db.connectToBackend();
                 }
                 catch (err) {
                     if (err.code === 'ENOENT') {
@@ -58,15 +72,7 @@ let ListenService = class ListenService {
 };
 exports.ListenService = ListenService;
 exports.ListenService = ListenService = __decorate([
-    (0, common_1.Injectable)()
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [listen_DBConnector_1.DBConnector])
 ], ListenService);
-let DBConnector = class DBConnector {
-    testConnector() {
-        return "hi";
-    }
-};
-exports.DBConnector = DBConnector;
-exports.DBConnector = DBConnector = __decorate([
-    (0, common_1.Injectable)()
-], DBConnector);
 //# sourceMappingURL=listen.service.js.map

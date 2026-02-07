@@ -10,6 +10,7 @@ exports.ListenModule = void 0;
 const common_1 = require("@nestjs/common");
 const listen_controller_1 = require("../controllers/listen.controller");
 const listen_service_1 = require("../services/listen.service");
+const listen_DBConnector_1 = require("../services/listen.DBConnector");
 let ListenModule = class ListenModule {
 };
 exports.ListenModule = ListenModule;
@@ -17,7 +18,7 @@ exports.ListenModule = ListenModule = __decorate([
     (0, common_1.Module)({
         imports: [],
         controllers: [listen_controller_1.ListenController],
-        providers: [listen_service_1.ListenService],
+        providers: [listen_service_1.ListenService, listen_DBConnector_1.DBConnector],
     })
 ], ListenModule);
 //# sourceMappingURL=listen.module.js.map

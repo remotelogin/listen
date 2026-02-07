@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import chokidar from 'chokidar';
 import {promises as fs} from 'node:fs';
 import { IFileWatcher } from 'src/interfaces/listen.IFileWatcher';
+import { DBConnector } from './listen.DBConnector';
 
 let file_buffer: String[];
 
@@ -10,8 +11,19 @@ export class ListenService implements IFileWatcher {
   
   private filePath = '/etc/nginx/logs/access.log';
   private number_of_lines: number = 0;
-  
-  
+
+  // inject database service
+  constructor(private readonly db :DBConnector){ // <- worst syntax ever lmao
+
+    db.setCredentials("","","",1337,"");
+    db.connectToBackend();
+
+  }
+  // start listener when service initializes
+  onModuleInit() {
+    this.startListener();
+  }
+
   setWatchFilePath(newFilePath: string): boolean {
     this.filePath = newFilePath;
     return true;
@@ -40,7 +52,8 @@ export class ListenService implements IFileWatcher {
 	  
 	  console.log("new request: " + last_line);
 	  
-	  //add to db	
+	  //add to db
+	  this.db.connectToBackend();
 	  
 	} catch (err) {
 	  if (err.code === 'ENOENT') {
@@ -60,16 +73,4 @@ export class ListenService implements IFileWatcher {
     
   }
 
-}
-
-@Injectable()
-export class DBConnector {
-  
-  testConnector(): string {
-    
-    return "hi";
-    
-    
-  }
-  
 }
