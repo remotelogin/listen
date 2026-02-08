@@ -17,7 +17,6 @@ const common_1 = require("@nestjs/common");
 const chokidar_1 = __importDefault(require("chokidar"));
 const node_fs_1 = require("node:fs");
 const listen_DBConnector_1 = require("./listen.DBConnector");
-let file_buffer;
 let ListenService = class ListenService {
     db;
     filePath = '/etc/nginx/logs/access.log';
@@ -50,6 +49,13 @@ let ListenService = class ListenService {
                     let lines = file_content.split(/\r?\n/);
                     this.number_of_lines = lines.length - 1;
                     let last_line = lines[this.number_of_lines - 1];
+                    let last_line_parts = last_line.split(`\\x1f`);
+                    console.log(`number of nginx fields: ${last_line_parts.length}`);
+                    for (let line_part of last_line_parts) {
+                        let key = line_part.split("=")[0];
+                        let val = line_part.split("=")[1];
+                        console.log(`foundn new field: ${key}, ${val}`);
+                    }
                     console.log("new request: " + last_line);
                     this.db.connectToBackend();
                 }
