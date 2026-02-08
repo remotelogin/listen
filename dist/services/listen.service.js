@@ -17,17 +17,28 @@ const common_1 = require("@nestjs/common");
 const chokidar_1 = __importDefault(require("chokidar"));
 const node_fs_1 = require("node:fs");
 const listen_DBConnector_1 = require("./listen.DBConnector");
+const listen_NGINXLog_1 = require("../classes/listen.NGINXLog");
 let ListenService = class ListenService {
     db;
     filePath = '/etc/nginx/logs/access.log';
     number_of_lines = 0;
     constructor(db) {
         this.db = db;
-        db.setCredentials("", "", "", 1337, "");
-        db.connectToBackend();
+        this.initDB(".credentials/database.key");
     }
     onModuleInit() {
         this.startListener();
+    }
+    async initDB(credPath) {
+        let credentials = await node_fs_1.promises.readFile(credPath, 'utf8');
+        let credentials_map = credentials.split("\n");
+        let username = credentials_map[0].split(":")[1];
+        let password = credentials_map[1].split(":")[1];
+        let name = credentials_map[2].split(":")[1];
+        let host = credentials_map[3].split(":")[1];
+        let port = Number(credentials_map[4].split(":")[1]);
+        this.db.setCredentials(username, password, host, port, name);
+        this.db.connectToBackend();
     }
     setWatchFilePath(newFilePath) {
         this.filePath = newFilePath;
@@ -48,16 +59,24 @@ let ListenService = class ListenService {
                     let file_content = await node_fs_1.promises.readFile(path, 'utf8');
                     let lines = file_content.split(/\r?\n/);
                     this.number_of_lines = lines.length - 1;
-                    let last_line = lines[this.number_of_lines - 1];
-                    let last_line_parts = last_line.split(`\\x1f`);
-                    console.log(`number of nginx fields: ${last_line_parts.length}`);
-                    for (let line_part of last_line_parts) {
-                        let key = line_part.split("=")[0];
-                        let val = line_part.split("=")[1];
-                        console.log(`foundn new field: ${key}, ${val}`);
+                    let new_entry = lines[this.number_of_lines - 1];
+                    let new_entry_parts = new_entry.split(`\\x1f`);
+                    console.log(`number of nginx fields: ${new_entry_parts.length}`);
+                    let new_db_tuple = new listen_NGINXLog_1.NGINXLog();
+                    for (let entry_part of new_entry_parts) {
+                        let idx = entry_part.indexOf("=");
+                        if (idx === -1) {
+                            console.log("COULD NOT FIND FIELD IN OUTPUT TUPLE!!! SKIPPING!!!");
+                            continue;
+                        }
+                        let key = entry_part.split("=")[0];
+                        let val = entry_part.split("=")[1];
+                        if (key in new_db_tuple) {
+                            new_db_tuple[key] = val;
+                        }
+                        console.log(`foundn new field: ${key}, ${val}, and loaded into output tuple!`);
                     }
-                    console.log("new request: " + last_line);
-                    this.db.connectToBackend();
+                    console.log("adding to db...");
                 }
                 catch (err) {
                     if (err.code === 'ENOENT') {

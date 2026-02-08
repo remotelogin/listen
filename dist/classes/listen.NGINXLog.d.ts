@@ -1,4 +1,4 @@
-export interface NGINXLog {
+export declare class NGINXLog {
     ts: string;
     msec: number;
     pid: number;

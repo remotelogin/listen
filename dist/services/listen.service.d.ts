@@ -6,6 +6,7 @@ export declare class ListenService implements IFileWatcher {
     private number_of_lines;
     constructor(db: DBConnector);
     onModuleInit(): void;
+    initDB(credPath: string): Promise<void>;
     setWatchFilePath(newFilePath: string): boolean;
     startListener(): void;
 }

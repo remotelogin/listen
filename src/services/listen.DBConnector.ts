@@ -3,6 +3,7 @@ import { IDBConnector } from '../interfaces/listen.IDBConnector';
 import { DBDetails } from '../interfaces/listen.DBDetails';
 import { Pool } from 'pg';
 import assert from 'assert';
+import { NGINXLog } from 'src/classes/listen.NGINXLog';
 
 @Injectable()
 export class DBConnector implements IDBConnector {
@@ -10,8 +11,7 @@ export class DBConnector implements IDBConnector {
   private details: DBDetails = {CONNECTION_DB_NAME:"",CONNECTION_HOST:"",CONNECTION_PASSWORD:"",CONNECTION_PORT:0,CONNECTION_USER:""};
   private initialized: boolean = false;
   public pool: Pool | null = null;
-  
-  
+    
   setCredentials(username:string, password:string, hostname:string, port:number, dbname: string) : void {    
     this.details.CONNECTION_DB_NAME = dbname.toString();
     this.details.CONNECTION_PORT = port;
@@ -19,6 +19,7 @@ export class DBConnector implements IDBConnector {
     this.details.CONNECTION_PASSWORD = password.toString();
     this.details.CONNECTION_USER = username.toString();   
     this.initialized = true;
+    console.log("set credentials!");
   };
   
   connectToBackend(): boolean {
@@ -27,11 +28,11 @@ export class DBConnector implements IDBConnector {
       return false;
     
     this.pool = new Pool({
-      user: process.env.DB_USER,
-      host: process.env.DB_HOST,
-      database: process.env.DB_NAME,
-      password: process.env.DB_PASSWORD,
-      port: Number(process.env.DB_PORT),
+      user: this.details.CONNECTION_USER,
+      host: this.details.CONNECTION_HOST,
+      database: this.details.CONNECTION_DB_NAME,
+      password: this.details.CONNECTION_PASSWORD,
+      port: this.details.CONNECTION_PORT,
     });
 
     const  verifyConnection = async (): Promise<void> => {
@@ -50,8 +51,13 @@ export class DBConnector implements IDBConnector {
     
   };
   
-  addTuple(input:Array<Array<string>> ): boolean {
+  addTuple(input:NGINXLog ): boolean {
 
+    assert(this.pool != null);
+    this.checkIfTableExists(this.pool,"nginxLogs")
+
+    
+    
     if(input == null)
       return false;
     
@@ -59,5 +65,14 @@ export class DBConnector implements IDBConnector {
 
   };
 
+  async checkIfTableExists(pool:Pool, name:string): Promise<boolean> {
+
+    const r = await pool.query(
+      `SELECT to_regclass($1) IS NOT NULL AS exists`,
+      [`public.${name}`]
+    );
+    return r.rows[0].exists === true;
+    
+  }
 
 }

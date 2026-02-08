@@ -24,17 +24,18 @@ let DBConnector = class DBConnector {
         this.details.CONNECTION_PASSWORD = password.toString();
         this.details.CONNECTION_USER = username.toString();
         this.initialized = true;
+        console.log("set credentials!");
     }
     ;
     connectToBackend() {
         if (!this.initialized)
             return false;
         this.pool = new pg_1.Pool({
-            user: process.env.DB_USER,
-            host: process.env.DB_HOST,
-            database: process.env.DB_NAME,
-            password: process.env.DB_PASSWORD,
-            port: Number(process.env.DB_PORT),
+            user: this.details.CONNECTION_USER,
+            host: this.details.CONNECTION_HOST,
+            database: this.details.CONNECTION_DB_NAME,
+            password: this.details.CONNECTION_PASSWORD,
+            port: this.details.CONNECTION_PORT,
         });
         const verifyConnection = async () => {
             try {
@@ -52,11 +53,17 @@ let DBConnector = class DBConnector {
     }
     ;
     addTuple(input) {
+        (0, assert_1.default)(this.pool != null);
+        this.checkIfTableExists(this.pool, "nginxLogs");
         if (input == null)
             return false;
         return true;
     }
     ;
+    async checkIfTableExists(pool, name) {
+        const r = await pool.query(`SELECT to_regclass($1) IS NOT NULL AS exists`, [`public.${name}`]);
+        return r.rows[0].exists === true;
+    }
 };
 exports.DBConnector = DBConnector;
 exports.DBConnector = DBConnector = __decorate([
