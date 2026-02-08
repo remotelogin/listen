@@ -56,7 +56,8 @@ export class ListenService implements IFileWatcher {
     });
 
     const events: Array<'change' | 'add'> = ['change','add'];
-    
+
+    // this so has to be refactored lmao
     for (const eventType of events) {
       watcher.on(eventType, async (path) => {
 	try {
@@ -91,7 +92,7 @@ export class ListenService implements IFileWatcher {
 	  }
 	  
 	  console.log("adding to db...");
-	  //this.db.addTuple()
+	  this.db.addTuple(new_db_tuple);
 	  
 	} catch (err) {
 	  if (err.code === 'ENOENT') {

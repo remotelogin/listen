@@ -77,6 +77,7 @@ let ListenService = class ListenService {
                         console.log(`foundn new field: ${key}, ${val}, and loaded into output tuple!`);
                     }
                     console.log("adding to db...");
+                    this.db.addTuple(new_db_tuple);
                 }
                 catch (err) {
                     if (err.code === 'ENOENT') {
