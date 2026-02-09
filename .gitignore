@@ -1,2 +1,2 @@
-node_modules/*
-.credentials/*
+backend/node_modules/*
+backend/.credentials/*
