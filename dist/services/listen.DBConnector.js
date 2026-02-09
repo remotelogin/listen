@@ -82,7 +82,7 @@ let DBConnector = class DBConnector {
         (0, assert_1.default)(this.pool != null, "Pool not initialized!!");
         const exists = await this.checkIfTableExists(this.pool, "nginxlogs");
         (0, assert_1.default)(exists, "nginxlogs table not existing!!!");
-        console.log(`connected to: ${this.details.CONNECTION_USER},${this.details.CONNECTION_HOST},${this.details.CONNECTION_DB_NAME},${this.details.CONNECTION_PORT},}`);
+        console.log(`connected to: ${this.details.CONNECTION_USER},${this.details.CONNECTION_HOST},${this.details.CONNECTION_DB_NAME},${this.details.CONNECTION_PORT}}`);
         let colsSql = this.COLS.join(",");
         let placeholders = this.COLS.map((_, i) => `$${i + 1}`).join(",");
         let values = this.COLS.map((c) => this.nullIfDashOrEmpty(log[c]));
@@ -90,6 +90,11 @@ let DBConnector = class DBConnector {
         return true;
     }
     ;
+    async runSQLQuery(query) {
+        (0, assert_1.default)(this.pool != null, "Pool may not be initialized!!!");
+        const r = await this.pool.query(query);
+        return r.rows[0];
+    }
     async checkIfTableExists(pool, name) {
         const r = await pool.query(`SELECT to_regclass($1) IS NOT NULL AS exists`, [`public.${name}`]);
         return r.rows[0].exists === true;

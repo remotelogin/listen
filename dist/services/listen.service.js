@@ -61,12 +61,13 @@ let ListenService = class ListenService {
                     this.number_of_lines = lines.length - 1;
                     let new_entry = lines[this.number_of_lines - 1];
                     let new_entry_parts = new_entry.split(`\\x1f`);
-                    console.log(`number of nginx fields: ${new_entry_parts.length}`);
                     let new_db_tuple = new listen_NGINXLog_1.NGINXLog();
                     for (let entry_part of new_entry_parts) {
+                        if (entry_part == "")
+                            continue;
                         let idx = entry_part.indexOf("=");
                         if (idx === -1) {
-                            console.log("COULD NOT FIND FIELD IN OUTPUT TUPLE!!! SKIPPING!!!");
+                            console.log("COULD NOT FIND FIELD IN OUTPUT TUPLE!!! SKIPPING FIELD WITH NAME:" + entry_part);
                             continue;
                         }
                         let key = entry_part.split("=")[0];
@@ -74,9 +75,8 @@ let ListenService = class ListenService {
                         if (key in new_db_tuple) {
                             new_db_tuple[key] = val;
                         }
-                        console.log(`foundn new field: ${key}, ${val}, and loaded into output tuple!`);
                     }
-                    console.log("adding to db...");
+                    console.log("adding new request to db...");
                     this.db.addTuple(new_db_tuple);
                 }
                 catch (err) {

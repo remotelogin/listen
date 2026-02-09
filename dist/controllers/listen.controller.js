@@ -18,8 +18,26 @@ let ListenController = class ListenController {
         this.listenService = listenService;
         this.listenService.setWatchFilePath("/etc/nginx/logs/access.log");
     }
+    accessLog() {
+        return this.listenService.db.runSQLQuery("SELECT * FROM nginxlogs");
+    }
+    accessLogCount() {
+        return this.listenService.db.runSQLQuery("SELECT COUNT(*) AS total_entries FROM nginxlogs;");
+    }
 };
 exports.ListenController = ListenController;
+__decorate([
+    (0, common_1.Get)("logs/"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Object)
+], ListenController.prototype, "accessLog", null);
+__decorate([
+    (0, common_1.Get)("logs/count"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Object)
+], ListenController.prototype, "accessLogCount", null);
 exports.ListenController = ListenController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [listen_service_1.ListenService])

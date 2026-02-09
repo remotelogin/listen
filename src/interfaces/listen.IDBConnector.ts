@@ -10,5 +10,7 @@ export interface IDBConnector {
   addTuple( input: NGINXLog ): Promise<boolean>;
 
   checkIfTableExists(pool:Pool, name:string): Promise<boolean>;
+
+  runSQLQuery(query:string): Promise<string>;
   
 }

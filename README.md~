@@ -77,7 +77,10 @@ add this to your nginx.conf to log in the right format to allow parsing:
   'ssl_session_reused="$ssl_session_reused"\x1f'
   'ssl_client_verify="$ssl_client_verify"\x1f'
   'ssl_client_s_dn="$ssl_client_s_dn"\x1f'
-  'ssl_client_i_dn="$ssl_client_i_dn"\x1f';
+  'ssl_client_i_dn="$ssl_client_i_dn"\x1f'
+
+  '\x1e';
+
 
 ```
 

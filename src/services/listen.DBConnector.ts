@@ -85,7 +85,7 @@ export class DBConnector implements IDBConnector {
     const exists = await this.checkIfTableExists(this.pool, "nginxlogs");
     assert(exists, "nginxlogs table not existing!!!");
     
-    console.log(`connected to: ${this.details.CONNECTION_USER},${this.details.CONNECTION_HOST},${this.details.CONNECTION_DB_NAME},${this.details.CONNECTION_PORT},}`);
+    console.log(`connected to: ${this.details.CONNECTION_USER},${this.details.CONNECTION_HOST},${this.details.CONNECTION_DB_NAME},${this.details.CONNECTION_PORT}}`);
     
     let colsSql = this.COLS.join(",");
     let placeholders = this.COLS.map((_, i) => `$${i + 1}`).join(","); //swag sql injection bypass thx stackoverflow
@@ -102,6 +102,15 @@ export class DBConnector implements IDBConnector {
 
   };
 
+  async runSQLQuery(query:string): Promise<string> {
+
+    assert(this.pool!=null, "Pool may not be initialized!!!");
+    const r = await this.pool.query(query);
+
+    return r.rows[0];
+    
+  }
+  
   async checkIfTableExists(pool:Pool, name:string): Promise<boolean> {
 
     const r = await pool.query(

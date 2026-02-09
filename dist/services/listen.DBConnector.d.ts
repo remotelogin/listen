@@ -10,5 +10,6 @@ export declare class DBConnector implements IDBConnector {
     nullIfDashOrEmpty(v: unknown): any;
     connectToBackend(): boolean;
     addTuple(log: NGINXLog): Promise<boolean>;
+    runSQLQuery(query: string): Promise<string>;
     checkIfTableExists(pool: Pool, name: string): Promise<boolean>;
 }

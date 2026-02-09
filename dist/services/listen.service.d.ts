@@ -1,7 +1,7 @@
 import { IFileWatcher } from 'src/interfaces/listen.IFileWatcher';
 import { DBConnector } from './listen.DBConnector';
 export declare class ListenService implements IFileWatcher {
-    private readonly db;
+    readonly db: DBConnector;
     private filePath;
     private number_of_lines;
     constructor(db: DBConnector);

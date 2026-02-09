@@ -12,7 +12,7 @@ export class ListenService implements IFileWatcher {
   private number_of_lines: number = 0;
 
   // inject database service
-  constructor(private readonly db :DBConnector){ // <- worst syntax ever lmao
+  constructor(public readonly db :DBConnector){ // <- worst syntax ever lmao
 
     //TODO: launch param? or env var
     this.initDB(".credentials/database.key");
@@ -68,16 +68,16 @@ export class ListenService implements IFileWatcher {
 	  this.number_of_lines = lines.length-1;
 	  let new_entry: string = lines[this.number_of_lines-1];
 	  let new_entry_parts: Array<string> = new_entry.split(`\\x1f`);
-
-	  console.log(`number of nginx fields: ${new_entry_parts.length}`);
-
 	  let new_db_tuple: NGINXLog = new NGINXLog();
 	  
 	  for(let entry_part of new_entry_parts) {
 
+	    if(entry_part == "")
+	      continue;
+	    
 	    let idx = entry_part.indexOf("=");
 	    if (idx === -1) {
-	      console.log("COULD NOT FIND FIELD IN OUTPUT TUPLE!!! SKIPPING!!!");
+	      console.log("COULD NOT FIND FIELD IN OUTPUT TUPLE!!! SKIPPING FIELD WITH NAME:" + entry_part);
 	      continue;}
 	    
 	    let key:string = entry_part.split("=")[0];
@@ -87,11 +87,9 @@ export class ListenService implements IFileWatcher {
 	      (new_db_tuple as any)[key] = val;
 	    }
 	    
-	    console.log(`foundn new field: ${key}, ${val}, and loaded into output tuple!`);
-	    
 	  }
 	  
-	  console.log("adding to db...");
+	  console.log("adding new request to db...");
 	  this.db.addTuple(new_db_tuple);
 	  
 	} catch (err) {
