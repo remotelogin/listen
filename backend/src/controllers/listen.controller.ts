@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { ListenService } from '../services/listen.service';
 import { GUARDS_METADATA } from '@nestjs/common/constants';
 
@@ -23,7 +23,5 @@ export class ListenController {
   accessLogCount():any {
     return this.listenService.db.runSQLQuery("SELECT COUNT(*) AS total_entries FROM nginxlogs;");
   }
-
-  
-  
+ 
 }
