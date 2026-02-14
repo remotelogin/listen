@@ -5,6 +5,7 @@ import { IFileWatcher } from 'src/interfaces/listen.IFileWatcher';
 import { DBConnector } from './listen.DBConnector';
 import { NGINXLog } from 'src/classes/listen.NGINXLog';
 import { v4 as uuidv4 } from 'uuid';
+import { AnalysisEntry } from 'src/classes/listen.AnalysisEntry';
 
 @Injectable()
 export class ListenService implements IFileWatcher {
@@ -70,6 +71,7 @@ export class ListenService implements IFileWatcher {
 	  let new_entry: string = lines[this.number_of_lines-1];
 	  let new_entry_parts: Array<string> = new_entry.split(`\\x1f`);
 	  let new_db_tuple: NGINXLog = new NGINXLog();
+	  let new_analysis_tuple: AnalysisEntry = new AnalysisEntry();
 	  
 	  for(let entry_part of new_entry_parts) {
 
@@ -91,9 +93,11 @@ export class ListenService implements IFileWatcher {
 	  }
 
 	  new_db_tuple.uuid = uuidv4();
-	  
+	  new_analysis_tuple.uuid = new_db_tuple.uuid;
+
 	  console.log("adding new request to db...");
 	  this.db.addTuple(new_db_tuple);
+	  this.db.addAnalysisTuple(new_analysis_tuple);
 	  
 	} catch (err) {
 	  if (err.code === 'ENOENT') {

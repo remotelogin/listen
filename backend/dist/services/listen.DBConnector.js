@@ -30,6 +30,13 @@ let DBConnector = class DBConnector {
         "h_x_forwarded_for", "h_x_forwarded_proto", "h_x_forwarded_host", "h_x_request_id", "h_x_real_ip",
         "ssl_protocol", "ssl_cipher", "ssl_server_name", "ssl_session_reused", "ssl_client_verify", "ssl_client_s_dn", "ssl_client_i_dn", "uuid",
     ];
+    ANALYSIS_LOG_COLS = [
+        "uuid",
+        "processed",
+        "convicted",
+        "reason",
+        "details"
+    ];
     setCredentials(username, password, hostname, port, dbname) {
         this.details.CONNECTION_DB_NAME = dbname.toString();
         this.details.CONNECTION_PORT = port;
@@ -87,6 +94,20 @@ let DBConnector = class DBConnector {
         let placeholders = this.COLS.map((_, i) => `$${i + 1}`).join(",");
         let values = this.COLS.map((c) => this.nullIfDashOrEmpty(log[c]));
         await this.pool.query(`INSERT INTO public."nginxlogs" (${colsSql}) VALUES (${placeholders})`, values);
+        return true;
+    }
+    ;
+    async addAnalysisTuple(log) {
+        (0, assert_1.default)(log != null, "must provide a analysis entry!");
+        (0, assert_1.default)(this.initialized, "Credentials for logging in must be set!");
+        (0, assert_1.default)(this.pool != null, "Pool not initialized!!");
+        const exists = await this.checkIfTableExists(this.pool, "analysis_log");
+        (0, assert_1.default)(exists, "analysis_log table not existing!!!");
+        console.log(`connected to: ${this.details.CONNECTION_USER},${this.details.CONNECTION_HOST},${this.details.CONNECTION_DB_NAME},${this.details.CONNECTION_PORT}}`);
+        let colsSql = this.ANALYSIS_LOG_COLS.join(",");
+        let placeholders = this.ANALYSIS_LOG_COLS.map((_, i) => `$${i + 1}`).join(",");
+        let values = this.ANALYSIS_LOG_COLS.map((c) => this.nullIfDashOrEmpty(log[c]));
+        await this.pool.query(`INSERT INTO public."analysis_log" (${colsSql}) VALUES (${placeholders})`, values);
         return true;
     }
     ;

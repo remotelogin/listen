@@ -19,6 +19,7 @@ const node_fs_1 = require("node:fs");
 const listen_DBConnector_1 = require("./listen.DBConnector");
 const listen_NGINXLog_1 = require("../classes/listen.NGINXLog");
 const uuid_1 = require("uuid");
+const listen_AnalysisEntry_1 = require("../classes/listen.AnalysisEntry");
 let ListenService = class ListenService {
     db;
     filePath = '/etc/nginx/logs/access.log';
@@ -63,6 +64,7 @@ let ListenService = class ListenService {
                     let new_entry = lines[this.number_of_lines - 1];
                     let new_entry_parts = new_entry.split(`\\x1f`);
                     let new_db_tuple = new listen_NGINXLog_1.NGINXLog();
+                    let new_analysis_tuple = new listen_AnalysisEntry_1.AnalysisEntry();
                     for (let entry_part of new_entry_parts) {
                         if (entry_part == "")
                             continue;
@@ -78,8 +80,10 @@ let ListenService = class ListenService {
                         }
                     }
                     new_db_tuple.uuid = (0, uuid_1.v4)();
+                    new_analysis_tuple.uuid = new_db_tuple.uuid;
                     console.log("adding new request to db...");
                     this.db.addTuple(new_db_tuple);
+                    this.db.addAnalysisTuple(new_analysis_tuple);
                 }
                 catch (err) {
                     if (err.code === 'ENOENT') {

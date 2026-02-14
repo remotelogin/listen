@@ -4,6 +4,7 @@ import { DBDetails } from '../interfaces/listen.DBDetails';
 import { Pool } from 'pg';
 import assert from 'assert';
 import { NGINXLog } from 'src/classes/listen.NGINXLog';
+import { AnalysisEntry } from 'src/classes/listen.AnalysisEntry';
 
 @Injectable()
 export class DBConnector implements IDBConnector {
@@ -25,6 +26,14 @@ export class DBConnector implements IDBConnector {
     "h_user_agent","h_referer","h_accept","h_accept_language","h_accept_encoding","h_cache_control","h_range","h_if_modified_since","h_if_none_match",
     "h_x_forwarded_for","h_x_forwarded_proto","h_x_forwarded_host","h_x_request_id","h_x_real_ip",
     "ssl_protocol","ssl_cipher","ssl_server_name","ssl_session_reused","ssl_client_verify","ssl_client_s_dn","ssl_client_i_dn","uuid",
+  ] as const;
+
+  ANALYSIS_LOG_COLS = [
+    "uuid",
+    "processed",
+    "convicted",
+    "reason",
+    "details"
   ] as const;
   
   setCredentials(username:string, password:string, hostname:string, port:number, dbname: string) : void {    
@@ -102,6 +111,32 @@ export class DBConnector implements IDBConnector {
 
   };
 
+  async addAnalysisTuple(log:AnalysisEntry ): Promise<boolean> {
+
+    assert(log != null, "must provide a analysis entry!");
+    assert(this.initialized, "Credentials for logging in must be set!");
+    assert(this.pool != null, "Pool not initialized!!");
+    const exists = await this.checkIfTableExists(this.pool, "analysis_log");
+    assert(exists, "analysis_log table not existing!!!");
+    
+    console.log(`connected to: ${this.details.CONNECTION_USER},${this.details.CONNECTION_HOST},${this.details.CONNECTION_DB_NAME},${this.details.CONNECTION_PORT}}`);
+    
+    let colsSql = this.ANALYSIS_LOG_COLS.join(",");
+    let placeholders = this.ANALYSIS_LOG_COLS.map((_, i) => `$${i + 1}`).join(","); //swag sql injection bypass thx stackoverflow
+    
+    type Col =typeof this.ANALYSIS_LOG_COLS[number];    
+    let values = this.ANALYSIS_LOG_COLS.map((c: Col) => this.nullIfDashOrEmpty((log as any)[c]));
+    
+    await this.pool.query(
+      `INSERT INTO public."analysis_log" (${colsSql}) VALUES (${placeholders})`,
+      values
+    );
+    
+    return true;
+
+  };
+
+  
   async runSQLQuery(query:string): Promise<any[]> {
 
     assert(this.pool!=null, "Pool may not be initialized!!!");
