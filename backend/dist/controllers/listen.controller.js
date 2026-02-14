@@ -27,13 +27,13 @@ let ListenController = class ListenController {
 };
 exports.ListenController = ListenController;
 __decorate([
-    (0, common_1.Get)("logs/"),
+    (0, common_1.Get)("/logs/"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Object)
 ], ListenController.prototype, "accessLog", null);
 __decorate([
-    (0, common_1.Get)("logs/count"),
+    (0, common_1.Get)("/logs/count"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Object)

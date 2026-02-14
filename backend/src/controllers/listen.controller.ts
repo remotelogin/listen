@@ -11,7 +11,7 @@ export class ListenController {
 
 
   // the logs endpoint. main interactive thingy
-  @Get("logs/")
+  @Get("/logs/")
   accessLog():any {
 
     return this.listenService.db.runSQLQuery("SELECT * FROM nginxlogs");
@@ -19,7 +19,7 @@ export class ListenController {
   }
 
   // get number of logs in db
-  @Get("logs/count")
+  @Get("/logs/count")
   accessLogCount():any {
     return this.listenService.db.runSQLQuery("SELECT COUNT(*) AS total_entries FROM nginxlogs;");
   }

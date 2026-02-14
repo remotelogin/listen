@@ -4,6 +4,11 @@ const core_1 = require("@nestjs/core");
 const listen_module_1 = require("./modules/listen.module");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(listen_module_1.ListenModule);
+    app.enableCors({
+        origin: 'https://gamma.pm',
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        credentials: true,
+    });
     await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
