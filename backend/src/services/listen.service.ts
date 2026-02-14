@@ -4,6 +4,7 @@ import {promises as fs} from 'node:fs';
 import { IFileWatcher } from 'src/interfaces/listen.IFileWatcher';
 import { DBConnector } from './listen.DBConnector';
 import { NGINXLog } from 'src/classes/listen.NGINXLog';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class ListenService implements IFileWatcher {
@@ -88,6 +89,8 @@ export class ListenService implements IFileWatcher {
 	    }
 	    
 	  }
+
+	  new_db_tuple.uuid = uuidv4();
 	  
 	  console.log("adding new request to db...");
 	  this.db.addTuple(new_db_tuple);

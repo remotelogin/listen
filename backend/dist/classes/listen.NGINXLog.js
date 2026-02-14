@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NGINXLog = void 0;
 class NGINXLog {
+    uuid = "";
     ts = "";
     msec = 0;
     pid = 0;

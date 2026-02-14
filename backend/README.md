@@ -162,7 +162,8 @@ CREATE TABLE IF NOT EXISTS public.nginxlogs (
   ssl_session_reused TEXT,
   ssl_client_verify TEXT,
   ssl_client_s_dn TEXT,
-  ssl_client_i_dn TEXT
+  ssl_client_i_dn TEXT,
+  uuid TEXT
 );
 
 ```

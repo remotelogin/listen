@@ -4,4 +4,5 @@ export declare class ListenController {
     constructor(listenService: ListenService);
     accessLog(): any;
     accessLogCount(): any;
+    runCustomSQL(query: string): any;
 }

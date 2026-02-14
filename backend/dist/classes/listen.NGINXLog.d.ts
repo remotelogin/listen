@@ -1,4 +1,5 @@
 export declare class NGINXLog {
+    uuid: string;
     ts: string;
     msec: number;
     pid: number;

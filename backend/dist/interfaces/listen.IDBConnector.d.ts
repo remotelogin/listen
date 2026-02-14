@@ -5,5 +5,5 @@ export interface IDBConnector {
     connectToBackend(): boolean;
     addTuple(input: NGINXLog): Promise<boolean>;
     checkIfTableExists(pool: Pool, name: string): Promise<boolean>;
-    runSQLQuery(query: string): Promise<string>;
+    runSQLQuery(query: string): Promise<any[]>;
 }

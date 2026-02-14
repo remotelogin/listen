@@ -1,12 +1,12 @@
 import './App.css'
-import StoredLogCount from './components/fetcher'
-
+import ListLast5Logs from './components/ListLast5Logs'
+import StoredLogCount from './components/StoredLogCount'
 
 function App() {
   
   return (<>
     <StoredLogCount/>
-    <h1> loading... </h1>
+    <ListLast5Logs/>
     </>)
 
 }

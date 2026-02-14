@@ -28,7 +28,7 @@ let DBConnector = class DBConnector {
         "gzip_ratio",
         "h_user_agent", "h_referer", "h_accept", "h_accept_language", "h_accept_encoding", "h_cache_control", "h_range", "h_if_modified_since", "h_if_none_match",
         "h_x_forwarded_for", "h_x_forwarded_proto", "h_x_forwarded_host", "h_x_request_id", "h_x_real_ip",
-        "ssl_protocol", "ssl_cipher", "ssl_server_name", "ssl_session_reused", "ssl_client_verify", "ssl_client_s_dn", "ssl_client_i_dn",
+        "ssl_protocol", "ssl_cipher", "ssl_server_name", "ssl_session_reused", "ssl_client_verify", "ssl_client_s_dn", "ssl_client_i_dn", "uuid",
     ];
     setCredentials(username, password, hostname, port, dbname) {
         this.details.CONNECTION_DB_NAME = dbname.toString();
@@ -93,7 +93,7 @@ let DBConnector = class DBConnector {
     async runSQLQuery(query) {
         (0, assert_1.default)(this.pool != null, "Pool may not be initialized!!!");
         const r = await this.pool.query(query);
-        return r.rows[0];
+        return r.rows;
     }
     async checkIfTableExists(pool, name) {
         const r = await pool.query(`SELECT to_regclass($1) IS NOT NULL AS exists`, [`public.${name}`]);

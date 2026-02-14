@@ -15,12 +15,13 @@ function StoredLogCount() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['storedLogs'],
     queryFn: fetchStoredLogs,
+    refetchInterval: 2000,
   })
   
   if (isLoading) return <p>Loading users...</p>
   if (error) return <p>Error: {error.message}</p>
 
-  return (<p> {data.total_entries}</p>)
+  return (<p> Total number of logged requests: {data[0].total_entries}</p>)
   
 }
 export default StoredLogCount;

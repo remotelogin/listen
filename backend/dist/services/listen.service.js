@@ -18,6 +18,7 @@ const chokidar_1 = __importDefault(require("chokidar"));
 const node_fs_1 = require("node:fs");
 const listen_DBConnector_1 = require("./listen.DBConnector");
 const listen_NGINXLog_1 = require("../classes/listen.NGINXLog");
+const uuid_1 = require("uuid");
 let ListenService = class ListenService {
     db;
     filePath = '/etc/nginx/logs/access.log';
@@ -76,6 +77,7 @@ let ListenService = class ListenService {
                             new_db_tuple[key] = val;
                         }
                     }
+                    new_db_tuple.uuid = (0, uuid_1.v4)();
                     console.log("adding new request to db...");
                     this.db.addTuple(new_db_tuple);
                 }
