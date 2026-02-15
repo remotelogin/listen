@@ -1,0 +1,7 @@
+export class ReportBody {
+
+  ip:string = "";
+  reason:string = "";
+  category:string = "";
+
+}

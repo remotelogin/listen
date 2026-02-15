@@ -8,14 +8,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AnalyzerService = void 0;
 const common_1 = require("@nestjs/common");
 const listen_DBConnector_1 = require("./listen.DBConnector");
 const listen_AnalysisEntry_1 = require("../classes/listen.AnalysisEntry");
 const listen_EConvictionResult_1 = require("../classes/listen.EConvictionResult");
+const listen_reporter_1 = require("./listen.reporter");
+const listen_ReportBody_1 = require("../classes/listen.ReportBody");
+const assert_1 = __importDefault(require("assert"));
 let AnalyzerService = class AnalyzerService {
     db;
+    abuseReporter;
     fetchSqlQuery = `SELECT
 uuid        AS "uuid",
 processed   AS "processed",
@@ -39,8 +46,9 @@ WHERE uuid = $1;
     timer;
     timeout = 1000;
     analyzers = [];
-    constructor(db) {
+    constructor(db, abuseReporter) {
         this.db = db;
+        this.abuseReporter = abuseReporter;
     }
     setAnalyzeIntervalS(newSeconds) {
         this.timeout = newSeconds * 1000;
@@ -86,15 +94,15 @@ WHERE uuid = $1;
                     let stringReason = "";
                     switch (result.reason) {
                         case listen_EConvictionResult_1.EConvictionResult.E_ABUSE: {
-                            stringReason = "Abuse";
+                            stringReason = "23";
                             break;
                         }
                         case listen_EConvictionResult_1.EConvictionResult.E_DOS: {
-                            stringReason = "DDOS attempt";
+                            stringReason = "4";
                             break;
                         }
                         case listen_EConvictionResult_1.EConvictionResult.E_EXPLOIT: {
-                            stringReason = "Exploitation";
+                            stringReason = "20";
                             break;
                         }
                         case listen_EConvictionResult_1.EConvictionResult.E_NONE: {
@@ -102,16 +110,19 @@ WHERE uuid = $1;
                             break;
                         }
                         case listen_EConvictionResult_1.EConvictionResult.E_SCANNER: {
-                            stringReason = "Unauthorized scanning";
+                            stringReason = "19";
                             break;
                         }
                         case listen_EConvictionResult_1.EConvictionResult.E_SCRAPER: {
-                            stringReason = "Unauthorized webscraper";
+                            stringReason = "19";
                             break;
                         }
                     }
                     this.patchAnalysisEntry(record.uuid, true, true, stringReason, result.notes);
-                    console.log("Detected abuse: " + record.uuid);
+                    console.log("Detected abuse: " + record.uuid + "reporting...");
+                    let logEntry = await this.db.getNGINXLogFromUUID(record.uuid);
+                    (0, assert_1.default)(logEntry != null, "Could not fetch log entry!!! Database state might be corrupt!");
+                    this.abuseReporter.reportToAPI(new listen_ReportBody_1.ReportBody(logEntry.realip, result.notes, stringReason));
                     break;
                 }
                 else {
@@ -124,6 +135,6 @@ WHERE uuid = $1;
 exports.AnalyzerService = AnalyzerService;
 exports.AnalyzerService = AnalyzerService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [listen_DBConnector_1.DBConnector])
+    __metadata("design:paramtypes", [listen_DBConnector_1.DBConnector, listen_reporter_1.AbuseIPDBreporter])
 ], AnalyzerService);
 //# sourceMappingURL=listen.analyzer.js.map

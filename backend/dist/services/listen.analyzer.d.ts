@@ -1,14 +1,16 @@
 import { OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { IAnalyzeImplementation } from "src/interfaces/listen.IAnalyzeImplementation";
 import { DBConnector } from "./listen.DBConnector";
+import { AbuseIPDBreporter } from "./listen.reporter";
 export declare class AnalyzerService implements OnModuleInit, OnModuleDestroy {
     readonly db: DBConnector;
+    private readonly abuseReporter;
     private readonly fetchSqlQuery;
     private readonly patchSqlQuery;
     private timer?;
     private timeout;
     private analyzers;
-    constructor(db: DBConnector);
+    constructor(db: DBConnector, abuseReporter: AbuseIPDBreporter);
     setAnalyzeIntervalS(newSeconds: number): void;
     registerAnalyzer(analyzer: IAnalyzeImplementation): void;
     getAllAnalyzers(): IAnalyzeImplementation[];

@@ -12,6 +12,7 @@ const listen_controller_1 = require("../controllers/listen.controller");
 const listen_service_1 = require("../services/listen.service");
 const listen_DBConnector_1 = require("../services/listen.DBConnector");
 const listen_analyzer_1 = require("../services/listen.analyzer");
+const listen_reporter_1 = require("../services/listen.reporter");
 let ListenModule = class ListenModule {
 };
 exports.ListenModule = ListenModule;
@@ -19,7 +20,7 @@ exports.ListenModule = ListenModule = __decorate([
     (0, common_1.Module)({
         imports: [],
         controllers: [listen_controller_1.ListenController],
-        providers: [listen_service_1.ListenService, listen_DBConnector_1.DBConnector, listen_analyzer_1.AnalyzerService],
+        providers: [listen_service_1.ListenService, listen_DBConnector_1.DBConnector, listen_analyzer_1.AnalyzerService, listen_reporter_1.AbuseIPDBreporter],
     })
 ], ListenModule);
 //# sourceMappingURL=listen.module.js.map

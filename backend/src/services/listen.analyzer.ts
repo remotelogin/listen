@@ -4,6 +4,10 @@ import { DBConnector } from "./listen.DBConnector";
 import { AnalysisEntry } from "src/classes/listen.AnalysisEntry";
 import { AnalyzeResult } from "src/classes/listen.AnalyzeResult";
 import { EConvictionResult } from "src/classes/listen.EConvictionResult";
+import { AbuseIPDBreporter } from "./listen.reporter";
+import { ReportBody } from "src/classes/listen.ReportBody";
+import { NGINXLog } from "src/classes/listen.NGINXLog";
+import assert from "assert";
 
 @Injectable()
 export class AnalyzerService implements OnModuleInit, OnModuleDestroy {
@@ -37,7 +41,7 @@ WHERE uuid = $1;
 
   private analyzers: IAnalyzeImplementation[] = [];
 
-  constructor(public readonly db :DBConnector) {}
+  constructor(public readonly db :DBConnector, private readonly abuseReporter: AbuseIPDBreporter) {}
   
   public setAnalyzeIntervalS(newSeconds:number) {
     this.timeout = newSeconds*1000;
@@ -94,22 +98,28 @@ WHERE uuid = $1;
     
     console.log(`found ${newRecords.length} records. Running on ${this.analyzers.length} analyzers!`);
     for(let record of newRecords ) {
-      for(let analyzer of this.analyzers) {	
+      for(let analyzer of this.analyzers) {		  
 	let result: AnalyzeResult = await analyzer.analyzeRecord(record);
 
 	if(result.convicted) {
-	  // TODO: treat reporting to api
 	  let stringReason: string = "";
 	  switch(result.reason){
-	    case EConvictionResult.E_ABUSE:{ stringReason = "Abuse"; break; }
-	    case EConvictionResult.E_DOS:{ stringReason = "DDOS attempt"; break; }
-	    case EConvictionResult.E_EXPLOIT:{ stringReason = "Exploitation"; break; }
+	    case EConvictionResult.E_ABUSE:{ stringReason = "23"; break; }
+	    case EConvictionResult.E_DOS:{ stringReason = "4"; break; }
+	    case EConvictionResult.E_EXPLOIT:{ stringReason = "20"; break; }
 	    case EConvictionResult.E_NONE:{ stringReason = "None"; break; }
-	    case EConvictionResult.E_SCANNER:{ stringReason = "Unauthorized scanning"; break; }
-	    case EConvictionResult.E_SCRAPER:{ stringReason = "Unauthorized webscraper"; break; }
+	    case EConvictionResult.E_SCANNER:{ stringReason = "19"; break; }
+	    case EConvictionResult.E_SCRAPER:{ stringReason = "19"; break; }
 	  }
 	  this.patchAnalysisEntry(record.uuid,true,true,stringReason,result.notes);
-	  console.log("Detected abuse: " + record.uuid);
+	  console.log("Detected abuse: " + record.uuid + "reporting...");
+
+	  let logEntry:NGINXLog|null = await this.db.getNGINXLogFromUUID(record.uuid);
+	  assert(logEntry!=null, "Could not fetch log entry!!! Database state might be corrupt!");
+	  
+	  this.abuseReporter.reportToAPI(new ReportBody(logEntry.realip,result.notes,stringReason));
+
+
 	  break;
 	} else {
 	  // simply update processed
