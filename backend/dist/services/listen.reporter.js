@@ -15,6 +15,7 @@ const node_fs_1 = require("node:fs");
 let AbuseIPDBreporter = class AbuseIPDBreporter {
     apiToken = "";
     credLocation = "";
+    recentlyReported = new Map();
     constructor() {
         this.credLocation = ".credentials/api.key";
     }
@@ -26,6 +27,12 @@ let AbuseIPDBreporter = class AbuseIPDBreporter {
     async reportToAPI(report) {
         if (!this.apiToken)
             throw new Error("Missing API key");
+        const now = Date.now();
+        const last = this.recentlyReported.get(report.ip);
+        if (last && now - last < 15 * 60 * 1000) {
+            return false;
+        }
+        this.recentlyReported.set(report.ip, now);
         const url = `https://api.abuseipdb.com/api/v2/report`;
         console.log(`reporting as : ${report.ip} ip, ${report.category} category, ${report.reason} comment`);
         const response = await fetch(url, {
@@ -44,6 +51,7 @@ let AbuseIPDBreporter = class AbuseIPDBreporter {
         if (!response.ok) {
             const text = await response.text();
             console.log(`Failed to report IP: ${response.status} - ${text}`);
+            return false;
         }
         const data = await response.json();
         console.log("AbuseIPDB response:", data);
