@@ -16,10 +16,13 @@ class AnalyzerDirtraversal {
         let logEntry = await this.db.getNGINXLogFromUUID(record.uuid);
         (0, assert_1.default)(logEntry != null, "Could not fetch log entry!!! Database state might be corrupt!");
         let numOfBackslash = (logEntry.uri.match(/\.\.\//g) || []).length;
-        if (numOfBackslash > 10)
+        if (numOfBackslash > 10) {
+            console.log(`detected ${numOfBackslash} mother dir calls...`);
             return new listen_AnalyzeResult_1.AnalyzeResult(true, listen_EConvictionResult_1.EConvictionResult.E_EXPLOIT, "Attempted Directory traversal with useragent: " + logEntry.h_user_agent + " and uri: " + logEntry.uri);
-        else
+        }
+        else {
             return new listen_AnalyzeResult_1.AnalyzeResult(false, listen_EConvictionResult_1.EConvictionResult.E_NONE, "No offense detected!");
+        }
     }
 }
 exports.AnalyzerDirtraversal = AnalyzerDirtraversal;

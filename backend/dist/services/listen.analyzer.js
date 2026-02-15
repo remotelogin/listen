@@ -81,7 +81,6 @@ WHERE uuid = $1;
         console.log(`found ${newRecords.length} records. Running on ${this.analyzers.length} analyzers!`);
         for (let record of newRecords) {
             for (let analyzer of this.analyzers) {
-                console.log(`analyzing record with uuid: ${record.uuid}`);
                 let result = await analyzer.analyzeRecord(record);
                 if (result.convicted) {
                     let stringReason = "";
@@ -113,10 +112,10 @@ WHERE uuid = $1;
                     }
                     this.patchAnalysisEntry(record.uuid, true, true, stringReason, result.notes);
                     console.log("Detected abuse: " + record.uuid);
+                    break;
                 }
                 else {
-                    this.patchAnalysisEntry(record.uuid, true, false, "none", "none");
-                    console.log("Packet looks normal: " + record.uuid);
+                    this.patchAnalysisEntry(record.uuid, true, false, "legitimate request", "legitimate request");
                 }
             }
         }

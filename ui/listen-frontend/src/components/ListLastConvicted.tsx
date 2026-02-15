@@ -11,16 +11,15 @@ interface Props {
   autoRefresh:boolean;
 }
 
-function ListAnalysisOfLogs({ autoRefresh }: Props) {
+function ListLastConvicted({ autoRefresh }: Props) {
   const sqlQuery =
     `SELECT
 uuid        AS "Internal ID",
-processed   AS "Processed",
-convicted   AS "Convicted",
 reason      AS "Reason",
 details     AS "Details",
 created_at  AS "Created At"
 FROM analysis_log
+WHERE convicted = TRUE
 ORDER BY created_at DESC
 LIMIT 5;`;
   
@@ -59,7 +58,7 @@ LIMIT 5;`;
       style={{
         border: '1px solid #ccc',
         padding: '0.5em',
-        backgroundColor: '#080808',
+        backgroundColor: '#a00808',
         textAlign: 'left',
       }}
         >
@@ -72,7 +71,7 @@ LIMIT 5;`;
     {data.map((log:string, index:string) => (
       <tr key={index}>
         {headers.map((field:any) => (
-          <td key={field} style={{ border: '1px solid #ccc', padding: '0.5em' }}>
+          <td key={field} style={{ border: '1px solid #ccc',backgroundColor: 'a01010', padding: '0.5em' }}>
             {log[field]}
           </td>
         ))}
@@ -84,4 +83,4 @@ LIMIT 5;`;
   
 }
 
-export default ListAnalysisOfLogs;
+export default ListLastConvicted;

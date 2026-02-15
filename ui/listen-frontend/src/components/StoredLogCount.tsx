@@ -8,7 +8,11 @@ const fetchStoredLogs = async() => {
   return response.json()
 }
 
-function StoredLogCount() {
+interface Props {
+  autoRefresh:boolean;
+}
+
+function StoredLogCount({ autoRefresh }: Props) {
 
   console.log("fetching from api...");
   
@@ -16,6 +20,7 @@ function StoredLogCount() {
     queryKey: ['storedLogs'],
     queryFn: fetchStoredLogs,
     refetchInterval: 2000,
+    enabled: autoRefresh,
   })
   
   if (isLoading) return <p>Loading users...</p>

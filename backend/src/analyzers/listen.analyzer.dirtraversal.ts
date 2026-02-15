@@ -17,11 +17,11 @@ export class AnalyzerDirtraversal implements IAnalyzeImplementation {
     
     let numOfBackslash:number = (logEntry.uri.match(/\.\.\//g) || []).length;
 
-    if(numOfBackslash>10)
+    if(numOfBackslash>10){
+      console.log(`detected ${numOfBackslash} mother dir calls...`)
       return new AnalyzeResult(true,EConvictionResult.E_EXPLOIT,"Attempted Directory traversal with useragent: "+ logEntry.h_user_agent+" and uri: " + logEntry.uri);
-    else
+    } else {
       return new AnalyzeResult(false,EConvictionResult.E_NONE, "No offense detected!");
-    
+    }
   }
-
 }

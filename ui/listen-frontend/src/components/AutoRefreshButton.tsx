@@ -1,6 +1,8 @@
 import { useState } from "react";
 import ListLast5Logs from "./ListLast5Logs";
 import ListAnalysisOfLogs from "./ListAnalysisOfLogs";
+import ListLastConvicted from "./ListLastConvicted";
+import StoredLogCount from "./StoredLogCount";
 
 function AutoRefreshButton() {
   const [autoRefresh, setAutoRefresh] = useState(true);
@@ -16,7 +18,9 @@ function AutoRefreshButton() {
 
       <ListLast5Logs autoRefresh={autoRefresh} />
       <ListAnalysisOfLogs autoRefresh={autoRefresh} />
-    </div>
+      <ListLastConvicted autoRefresh={autoRefresh} />
+      <StoredLogCount autoRefresh={autoRefresh} />
+      </div>
   );
 }
 

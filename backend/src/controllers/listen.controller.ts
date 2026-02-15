@@ -2,6 +2,7 @@ import { Controller, Get, Post, Query } from '@nestjs/common';
 import { ListenService } from '../services/listen.service';
 import { AnalyzerService } from 'src/services/listen.analyzer';
 import { AnalyzerDirtraversal } from 'src/analyzers/listen.analyzer.dirtraversal';
+import { AnalyzerKnownScanners } from 'src/analyzers/listen.analyzer.knownscanners';
 
 @Controller()
 export class ListenController {
@@ -12,6 +13,7 @@ export class ListenController {
 
     //register analyzers
     this.analyzerService.registerAnalyzer(new AnalyzerDirtraversal(listenService.db));
+    this.analyzerService.registerAnalyzer(new AnalyzerKnownScanners(listenService.db));
 
   }
 

@@ -14,12 +14,13 @@ interface Props {
 function ListLast5Logs({ autoRefresh }: Props) {
   
   const sqlQuery =
-    `SELECT ts AS "Time", remote_addr AS "Client IP", realip AS "Real IP", request_method AS "Method", request_uri AS "URI", status AS "Status", body_bytes_sent AS "Bytes Sent", uuid AS "Internal ID", upstream_addr AS "Upstream Server", upstream_status AS "Upstream Status", h_user_agent AS "User Agent", h_referer AS "Referer" FROM nginxlogs ORDER BY ts DESC LIMIT 5;`;
+    `SELECT ts AS "Time", remote_addr AS "Client IP", request_method AS "Method", request_uri AS "URI", status AS "Status", body_bytes_sent AS "Bytes Sent", uuid AS "Internal ID", upstream_addr AS "Upstream Server", upstream_status AS "Upstream Status", h_user_agent AS "User Agent", h_referer AS "Referer" FROM nginxlogs ORDER BY ts DESC LIMIT 5;`;
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['customSQL', sqlQuery],
     queryFn: runCustomSQL,
     refetchInterval: autoRefresh ? 2000 : false,
+    enabled: autoRefresh,
   });
   
   if (isLoading) return <p>Loading logs...</p>;
