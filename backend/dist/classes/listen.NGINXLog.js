@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NGINXLog = void 0;
 class NGINXLog {
-    uuid = "";
     ts = "";
     msec = 0;
     pid = 0;
@@ -61,6 +60,7 @@ class NGINXLog {
     ssl_client_verify = "";
     ssl_client_s_dn = "";
     ssl_client_i_dn = "";
+    uuid = "";
 }
 exports.NGINXLog = NGINXLog;
 //# sourceMappingURL=listen.NGINXLog.js.map

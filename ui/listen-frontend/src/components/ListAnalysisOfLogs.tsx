@@ -7,7 +7,11 @@ const runCustomSQL = async ({ queryKey }: { queryKey: [string, string] }) => {
   return response.json();
 };
 
-function ListAnalysisOfLogs() {
+interface Props {
+  autoRefresh:boolean;
+}
+
+function ListAnalysisOfLogs({ autoRefresh }: Props) {
   const sqlQuery =
     `SELECT
 uuid        AS "Internal ID",
@@ -23,7 +27,7 @@ LIMIT 5;`;
   const { data, isLoading, error } = useQuery({
     queryKey: ['customSQL', sqlQuery],
     queryFn: runCustomSQL,
-    refetchInterval: 2000,
+    refetchInterval: autoRefresh ?  2000 : false,
   });
 
   if (isLoading) return <p>Loading logs...</p>;

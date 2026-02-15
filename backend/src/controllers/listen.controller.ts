@@ -1,13 +1,18 @@
 import { Controller, Get, Post, Query } from '@nestjs/common';
 import { ListenService } from '../services/listen.service';
 import { AnalyzerService } from 'src/services/listen.analyzer';
+import { AnalyzerDirtraversal } from 'src/analyzers/listen.analyzer.dirtraversal';
 
 @Controller()
 export class ListenController {
   
   constructor(private readonly listenService: ListenService, private readonly analyzerService: AnalyzerService) {
     this.listenService.setWatchFilePath("/etc/nginx/logs/access.log");
-    this.analyzerService.setAnalyzeIntervalS(2);
+    this.analyzerService.setAnalyzeIntervalS(5);
+
+    //register analyzers
+    this.analyzerService.registerAnalyzer(new AnalyzerDirtraversal(listenService.db));
+
   }
 
 

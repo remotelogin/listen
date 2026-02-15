@@ -125,6 +125,16 @@ let DBConnector = class DBConnector {
         const r = await pool.query(`SELECT to_regclass($1) IS NOT NULL AS exists`, [`public.${name}`]);
         return r.rows[0].exists === true;
     }
+    async getNGINXLogFromUUID(uuid) {
+        (0, assert_1.default)(this.pool != null, "Pool may not be initialized!!!");
+        const cols = this.COLS.join(", ");
+        const query = `SELECT ${cols}
+FROM nginxlogs
+WHERE uuid = $1
+LIMIT 1`;
+        const result = await this.runSQLParameterizedQuery(query, [uuid]);
+        return result[0] ?? null;
+    }
 };
 exports.DBConnector = DBConnector;
 exports.DBConnector = DBConnector = __decorate([

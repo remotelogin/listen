@@ -3,6 +3,6 @@ import { AnalyzeResult } from "src/classes/listen.AnalyzeResult";
 
 export interface IAnalyzeImplementation {
 
-  analyzeRecord(record:AnalysisEntry): AnalyzeResult;
+  analyzeRecord(record:AnalysisEntry): Promise<AnalyzeResult>;
 
 }

@@ -1,7 +1,4 @@
 export class NGINXLog {
-
-  // reference
-  uuid: string = "";
   
   // time
   ts = "";
@@ -83,5 +80,8 @@ export class NGINXLog {
   ssl_client_verify = "";
   ssl_client_s_dn = "";
   ssl_client_i_dn = "";
+
+  // reference
+  uuid: string = "";
 
 }

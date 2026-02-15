@@ -1,5 +1,4 @@
 export declare class NGINXLog {
-    uuid: string;
     ts: string;
     msec: number;
     pid: number;
@@ -58,4 +57,5 @@ export declare class NGINXLog {
     ssl_client_verify: string;
     ssl_client_s_dn: string;
     ssl_client_i_dn: string;
+    uuid: string;
 }

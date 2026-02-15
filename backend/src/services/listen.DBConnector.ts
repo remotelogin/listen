@@ -166,4 +166,18 @@ export class DBConnector implements IDBConnector {
     
   }
 
+  async getNGINXLogFromUUID(uuid: string): Promise<NGINXLog> {
+    assert(this.pool != null, "Pool may not be initialized!!!");
+    
+    const cols = this.COLS.join(", ");
+    const query =
+      `SELECT ${cols}
+FROM nginxlogs
+WHERE uuid = $1
+LIMIT 1`;
+    
+    const result = await this.runSQLParameterizedQuery(query, [uuid]);  
+    return result[0] ?? null;
+  }
+   
 }

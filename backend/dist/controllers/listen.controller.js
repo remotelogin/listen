@@ -16,6 +16,7 @@ exports.ListenController = void 0;
 const common_1 = require("@nestjs/common");
 const listen_service_1 = require("../services/listen.service");
 const listen_analyzer_1 = require("../services/listen.analyzer");
+const listen_analyzer_dirtraversal_1 = require("../analyzers/listen.analyzer.dirtraversal");
 let ListenController = class ListenController {
     listenService;
     analyzerService;
@@ -23,7 +24,8 @@ let ListenController = class ListenController {
         this.listenService = listenService;
         this.analyzerService = analyzerService;
         this.listenService.setWatchFilePath("/etc/nginx/logs/access.log");
-        this.analyzerService.setAnalyzeIntervalS(2);
+        this.analyzerService.setAnalyzeIntervalS(5);
+        this.analyzerService.registerAnalyzer(new listen_analyzer_dirtraversal_1.AnalyzerDirtraversal(listenService.db));
     }
     accessLog() {
         return this.listenService.db.runSQLQuery("SELECT * FROM nginxlogs");

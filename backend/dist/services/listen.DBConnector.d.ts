@@ -16,4 +16,5 @@ export declare class DBConnector implements IDBConnector {
     runSQLQuery(query: string): Promise<any[]>;
     runSQLParameterizedQuery(query: string, params?: any[]): Promise<any[]>;
     checkIfTableExists(pool: Pool, name: string): Promise<boolean>;
+    getNGINXLogFromUUID(uuid: string): Promise<NGINXLog>;
 }

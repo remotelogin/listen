@@ -1,14 +1,12 @@
 import './App.css'
-import ListAnalysisOfLogs from './components/ListAnalysisOfLogs'
-import ListLast5Logs from './components/ListLast5Logs'
+import AutoRefreshButton from './components/AutoRefreshButton'
 import StoredLogCount from './components/StoredLogCount'
 
 function App() {
   
   return (<>
+    <AutoRefreshButton/>
     <StoredLogCount/>
-    <ListLast5Logs/>
-    <ListAnalysisOfLogs/>
     </>)
 
 }

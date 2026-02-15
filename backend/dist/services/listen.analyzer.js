@@ -13,19 +13,20 @@ exports.AnalyzerService = void 0;
 const common_1 = require("@nestjs/common");
 const listen_DBConnector_1 = require("./listen.DBConnector");
 const listen_AnalysisEntry_1 = require("../classes/listen.AnalysisEntry");
+const listen_EConvictionResult_1 = require("../classes/listen.EConvictionResult");
 let AnalyzerService = class AnalyzerService {
     db;
     fetchSqlQuery = `SELECT
-uuid        AS "Internal ID",
-processed   AS "Processed",
-convicted   AS "Convicted",
-reason      AS "Reason",
-details     AS "Details",
-created_at  AS "Created At"
+uuid        AS "uuid",
+processed   AS "processed",
+convicted   AS "convicted",
+reason      AS "reason",
+details     AS "details",
+created_at  AS "crated_at"
 FROM analysis_log
 WHERE processed IS DISTINCT FROM TRUE
 ORDER BY created_at DESC
-LIMIT 5;
+LIMIT 100;
 `;
     patchSqlQuery = `UPDATE analysis_log
 SET
@@ -80,11 +81,42 @@ WHERE uuid = $1;
         console.log(`found ${newRecords.length} records. Running on ${this.analyzers.length} analyzers!`);
         for (let record of newRecords) {
             for (let analyzer of this.analyzers) {
-                let result = analyzer.analyzeRecord(record);
+                console.log(`analyzing record with uuid: ${record.uuid}`);
+                let result = await analyzer.analyzeRecord(record);
                 if (result.convicted) {
+                    let stringReason = "";
+                    switch (result.reason) {
+                        case listen_EConvictionResult_1.EConvictionResult.E_ABUSE: {
+                            stringReason = "Abuse";
+                            break;
+                        }
+                        case listen_EConvictionResult_1.EConvictionResult.E_DOS: {
+                            stringReason = "DDOS attempt";
+                            break;
+                        }
+                        case listen_EConvictionResult_1.EConvictionResult.E_EXPLOIT: {
+                            stringReason = "Exploitation";
+                            break;
+                        }
+                        case listen_EConvictionResult_1.EConvictionResult.E_NONE: {
+                            stringReason = "None";
+                            break;
+                        }
+                        case listen_EConvictionResult_1.EConvictionResult.E_SCANNER: {
+                            stringReason = "Unauthorized scanning";
+                            break;
+                        }
+                        case listen_EConvictionResult_1.EConvictionResult.E_SCRAPER: {
+                            stringReason = "Unauthorized webscraper";
+                            break;
+                        }
+                    }
+                    this.patchAnalysisEntry(record.uuid, true, true, stringReason, result.notes);
+                    console.log("Detected abuse: " + record.uuid);
                 }
                 else {
                     this.patchAnalysisEntry(record.uuid, true, false, "none", "none");
+                    console.log("Packet looks normal: " + record.uuid);
                 }
             }
         }
