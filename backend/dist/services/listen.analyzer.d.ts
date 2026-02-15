@@ -1,7 +1,7 @@
 import { OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { IAnalyzeImplementation } from "src/interfaces/listen.IAnalyzeImplementation";
 import { DBConnector } from "./listen.DBConnector";
-import { AbuseIPDBreporter } from "./listen.reporter";
+import { AbuseIPDBreporter } from "./listen.reporter.ts~";
 export declare class AnalyzerService implements OnModuleInit, OnModuleDestroy {
     readonly db: DBConnector;
     private readonly abuseReporter;

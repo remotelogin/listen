@@ -18,6 +18,7 @@ const listen_service_1 = require("../services/listen.service");
 const listen_analyzer_1 = require("../services/listen.analyzer");
 const listen_analyzer_dirtraversal_1 = require("../analyzers/listen.analyzer.dirtraversal");
 const listen_analyzer_knownscanners_1 = require("../analyzers/listen.analyzer.knownscanners");
+const listen_analyzer_emptyreferer_1 = require("../analyzers/listen.analyzer.emptyreferer");
 let ListenController = class ListenController {
     listenService;
     analyzerService;
@@ -28,6 +29,7 @@ let ListenController = class ListenController {
         this.analyzerService.setAnalyzeIntervalS(5);
         this.analyzerService.registerAnalyzer(new listen_analyzer_dirtraversal_1.AnalyzerDirtraversal(listenService.db));
         this.analyzerService.registerAnalyzer(new listen_analyzer_knownscanners_1.AnalyzerKnownScanners(listenService.db));
+        this.analyzerService.registerAnalyzer(new listen_analyzer_emptyreferer_1.AnalyzerEmptyReferer(listenService.db));
     }
     accessLog() {
         return this.listenService.db.runSQLQuery("SELECT * FROM nginxlogs");

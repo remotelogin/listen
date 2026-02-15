@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { tableStyle, thStyle, tdStyle, rowStyle } from "../styling/TableStyles";
 
 const runCustomSQL = async ({ queryKey }: { queryKey: [string, string] }) => {
   const [, sqlQuery] = queryKey;
@@ -50,19 +51,11 @@ LIMIT 5;`;
   
 
   return (
-    <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+    <table style={tableStyle}>
       <thead>
-      <tr>
+      <tr style={rowStyle}>
     {headers.map((header) => (
-      <th
-      key={header}
-      style={{
-        border: '1px solid #ccc',
-        padding: '0.5em',
-        backgroundColor: '#080808',
-        textAlign: 'left',
-      }}
-        >
+      <th key={header} style={thStyle}>
         {header}
       </th>
     ))}
@@ -72,10 +65,23 @@ LIMIT 5;`;
     {data.map((log:string, index:string) => (
       <tr key={index}>
         {headers.map((field:any) => (
-          <td key={field} style={{ border: '1px solid #ccc', padding: '0.5em' }}>
-            {log[field]}
-          </td>
-        ))}
+	  <td
+	  key={field}
+	  style={{
+	    ...tdStyle,
+	    color: (
+	      field === "processed" || field === "convicted" ? (log[field] ? "green" : "red") : undefined
+	    ),
+	    backgroundColor: (
+	      field === "processed" || field === "convicted" ? (log[field] ? "green" : "red") : undefined
+	    )	    
+	  }}
+	    >
+	    {field === "created_at"
+	      ? new Date(log[field]).toLocaleString()
+	      : log[field].toString()}
+	  </td>
+	))}
       </tr>
     ))}
     </tbody>

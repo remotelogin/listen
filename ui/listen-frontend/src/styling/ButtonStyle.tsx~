@@ -1,0 +1,30 @@
+export const floatingButton = {
+  width: '70px',
+  height: '70px',
+  zIndex: 2,
+  position: 'fixed' as 'fixed',
+  bottom: '20px',
+  right: '20px',
+  border: 'none',
+  borderRadius: '50%',
+  cursor: 'pointer',
+  outline: 'none',
+};
+
+export const buttonColors = {
+  on: '#e63946',
+  off: '#999',
+};
+
+export const pulseAnimation = `
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 20px 10px rgba(230, 57, 70, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.7);
+  }
+}`;

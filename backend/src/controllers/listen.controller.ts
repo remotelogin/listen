@@ -3,6 +3,7 @@ import { ListenService } from '../services/listen.service';
 import { AnalyzerService } from 'src/services/listen.analyzer';
 import { AnalyzerDirtraversal } from 'src/analyzers/listen.analyzer.dirtraversal';
 import { AnalyzerKnownScanners } from 'src/analyzers/listen.analyzer.knownscanners';
+import { AnalyzerEmptyReferer } from 'src/analyzers/listen.analyzer.emptyreferer';
 
 @Controller()
 export class ListenController {
@@ -14,6 +15,7 @@ export class ListenController {
     //register analyzers
     this.analyzerService.registerAnalyzer(new AnalyzerDirtraversal(listenService.db));
     this.analyzerService.registerAnalyzer(new AnalyzerKnownScanners(listenService.db));
+    this.analyzerService.registerAnalyzer(new AnalyzerEmptyReferer(listenService.db));
 
   }
 

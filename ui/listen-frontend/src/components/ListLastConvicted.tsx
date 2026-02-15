@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { tableStyle, thStyle, tdStyle, rowStyle } from "../styling/TableStylesRed";
 
 const runCustomSQL = async ({ queryKey }: { queryKey: [string, string] }) => {
   const [, sqlQuery] = queryKey;
@@ -49,19 +50,11 @@ LIMIT 5;`;
   
 
   return (
-    <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+    <table style={tableStyle}>
       <thead>
       <tr>
     {headers.map((header) => (
-      <th
-      key={header}
-      style={{
-        border: '1px solid #ccc',
-        padding: '0.5em',
-        backgroundColor: '#a00808',
-        textAlign: 'left',
-      }}
-        >
+      <th key={header} style={thStyle}>
         {header}
       </th>
     ))}
@@ -69,9 +62,9 @@ LIMIT 5;`;
     </thead>
       <tbody>
     {data.map((log:string, index:string) => (
-      <tr key={index}>
+      <tr key={index} style={rowStyle}>
         {headers.map((field:any) => (
-          <td key={field} style={{ border: '1px solid #ccc',backgroundColor: 'a01010', padding: '0.5em' }}>
+          <td key={field} style={tdStyle}>
             {log[field]}
           </td>
         ))}

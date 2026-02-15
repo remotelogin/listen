@@ -1,0 +1,44 @@
+export const tableStyle: React.CSSProperties = {
+  width: '100%',
+  borderCollapse: 'separate',
+  borderSpacing: 0,
+  tableLayout: 'fixed',
+  background: '#1c1c1c',
+  borderRadius: '10px',
+    overflow: 'hidden',
+  boxShadow: '0 6px 18px rgba(0,0,0,0.5)',
+  fontSize: '0.9rem',
+  lineHeight: 1.4,
+  color: '#fff',
+};
+
+export const thStyle: React.CSSProperties = {
+  background: 'linear-gradient(180deg, #8b0000, #5a0000)',
+  color: '#fff',
+  padding: '10px 12px',
+  borderBottom: '1px solid #4a0000',
+  fontWeight: 600,
+  textAlign: 'left',
+  whiteSpace: 'nowrap',
+  wordBreak: 'break-word',
+  overflowWrap: 'anywhere',
+  position: 'sticky',
+  top: 0,
+  zIndex: 2,
+};
+
+export const tdStyle: React.CSSProperties = {
+  padding: '8px 12px',
+  borderBottom: '1px solid #2a0000',
+  color: '#ffcccc',
+  whiteSpace: 'normal',
+  wordBreak: 'break-word',
+  overflowWrap: 'anywhere',
+  verticalAlign: 'top',
+  fontFamily: 'monospace',
+  backgroundColor: '#2a0000',
+};
+
+export const rowStyle: React.CSSProperties = {
+  transition: 'background 0.15s ease',
+};

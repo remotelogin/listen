@@ -1,0 +1,45 @@
+import type { CSSProperties } from "react";
+
+
+export const tableStyle: CSSProperties = {
+  width: '100%',
+  borderCollapse: 'separate',
+  borderSpacing: 0,
+  tableLayout: 'fixed',
+  background: '#0f1115',
+  borderRadius: '10px',
+  overflow: 'hidden',
+  boxShadow: '0 6px 18px rgba(0,0,0,0.35)',
+  fontSize: '0.85rem',
+  lineHeight: 1.4,
+};
+
+export const thStyle: CSSProperties = {
+  background: 'linear-gradient(180deg, #1b1f2a, #151821)',
+  color: '#d8dee9',
+  padding: '10px 12px',
+  borderBottom: '1px solid #2a2f3a',
+  fontWeight: 600,
+  textAlign: 'left',
+  whiteSpace: 'normal',
+  wordBreak: 'break-word',
+  overflowWrap: 'anywhere',
+  position: 'sticky',
+  top: 0,
+  zIndex: 2,
+};
+
+export const tdStyle: CSSProperties = {
+  padding: '8px 12px',
+  borderBottom: '1px solid #1f2430',
+  color: '#cdd6f4',
+  whiteSpace: 'normal',
+  wordBreak: 'break-word',
+  overflowWrap: 'anywhere',
+  verticalAlign: 'top',
+  fontFamily: 'monospace',
+};
+
+export const rowStyle: CSSProperties = {
+  transition: 'background 0.15s ease',
+};

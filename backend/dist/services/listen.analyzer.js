@@ -11,13 +11,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AnalyzerService = void 0;
 const common_1 = require("@nestjs/common");
 const listen_DBConnector_1 = require("./listen.DBConnector");
 const listen_AnalysisEntry_1 = require("../classes/listen.AnalysisEntry");
 const listen_EConvictionResult_1 = require("../classes/listen.EConvictionResult");
-const listen_reporter_1 = require("./listen.reporter");
+const listen_reporter_ts_1 = require("./listen.reporter.ts~");
 const listen_ReportBody_1 = require("../classes/listen.ReportBody");
 const assert_1 = __importDefault(require("assert"));
 let AnalyzerService = class AnalyzerService {
@@ -135,6 +136,6 @@ WHERE uuid = $1;
 exports.AnalyzerService = AnalyzerService;
 exports.AnalyzerService = AnalyzerService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [listen_DBConnector_1.DBConnector, listen_reporter_1.AbuseIPDBreporter])
+    __metadata("design:paramtypes", [listen_DBConnector_1.DBConnector, typeof (_a = typeof listen_reporter_ts_1.AbuseIPDBreporter !== "undefined" && listen_reporter_ts_1.AbuseIPDBreporter) === "function" ? _a : Object])
 ], AnalyzerService);
 //# sourceMappingURL=listen.analyzer.js.map

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { tableStyle, thStyle, tdStyle, rowStyle } from "../styling/TableStyles";
 
 const runCustomSQL = async ({ queryKey }: { queryKey: [string, string] }) => {
   const [, sqlQuery] = queryKey;
@@ -39,32 +40,23 @@ function ListLast5Logs({ autoRefresh }: Props) {
   }
   
   const headers: string[] = Object.keys(data[0]);
-  
+
   return (
     <div>      
-      <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+      <table style={tableStyle}>
       <thead>
       <tr>
       {headers.map((header) => (
-	<th
-	key={header}
-	style={{
-          border: '1px solid #ccc',
-          padding: '0.5em',
-          backgroundColor: '#080808',
-          textAlign: 'left',
-	}}
-          >
-          {header}
-	</th>
+	<th key={header} style={thStyle} > {header} </th>
       ))}
+    
     </tr>
       </thead>
       <tbody>
       {data.map((log:string, index:string) => (
-	<tr key={index}>
+	<tr key={index} style={rowStyle}>
           {headers.map((field:any) => (
-            <td key={field} style={{ border: '1px solid #ccc', padding: '0.5em' }}>
+            <td key={field} style={tdStyle}>
               {log[field]}
             </td>
           ))}

@@ -4,23 +4,38 @@ import ListAnalysisOfLogs from "./ListAnalysisOfLogs";
 import ListLastConvicted from "./ListLastConvicted";
 import StoredLogCount from "./StoredLogCount";
 
+import { floatingButton, buttonColors, pulseAnimation } from "../styling/ButtonStyle";
+
 function AutoRefreshButton() {
   const [autoRefresh, setAutoRefresh] = useState(true);
 
+  const toggleAutoRefresh = () => setAutoRefresh(!autoRefresh);
+
   return (
-    <div>
+    <div style={{ padding: '1em' }}>
+      <StoredLogCount autoRefresh={autoRefresh} />
+      <h3>Last 5 processed requests to server and associated analysis logs.</h3>
+      <ListLast5Logs autoRefresh={autoRefresh} />
+      <br />
+      <ListAnalysisOfLogs autoRefresh={autoRefresh} />
+      <br />
+      <h3>Last 5 malicious requests to server.</h3>
+      <ListLastConvicted autoRefresh={autoRefresh} />
+
       <button
-        onClick={() => setAutoRefresh(!autoRefresh)}
-        style={{ marginBottom: '1em', padding: '0.5em 1em' }}
+        onClick={toggleAutoRefresh}
+        style={{
+          ...floatingButton,
+          backgroundColor: autoRefresh ? buttonColors.on : buttonColors.off,
+          animation: autoRefresh ? 'pulse 2s ease-in-out infinite' : 'none',
+        }}
       >
-        {autoRefresh ? "Stop Auto-Refresh" : "Start Auto-Refresh"}
+        {autoRefresh ? 'ON' : 'OFF'}
       </button>
 
-      <ListLast5Logs autoRefresh={autoRefresh} />
-      <ListAnalysisOfLogs autoRefresh={autoRefresh} />
-      <ListLastConvicted autoRefresh={autoRefresh} />
-      <StoredLogCount autoRefresh={autoRefresh} />
-      </div>
+      {/* Inject keyframes from ButtonStyle */}
+      <style>{pulseAnimation}</style>
+    </div>
   );
 }
 
