@@ -1,9 +1,16 @@
 export class AnalysisEntry {
 
-  uuid:string = "none";
-  processed:boolean = false;
-  convicted:boolean = false;
-  reason:string = "none";
-  details:string = "none";
+  constructor(public uuid:string = "none",
+	      public processed:boolean = false,
+	      public convicted:boolean = false,
+	      public reason:string = "none",
+	      public details:string = "none",) {}
+  
+  static fromString(row: string) {    
+    return new AnalysisEntry(row['uuid'],
+			     row['processed'],
+			     row['convicted'],
+			     row['reason'],
+			     row['details']);}
   
 }

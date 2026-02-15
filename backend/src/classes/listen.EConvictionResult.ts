@@ -1,0 +1,10 @@
+export enum EConvictionResult {
+
+  E_SCRAPER,
+  E_ABUSE,
+  E_EXPLOIT,
+  E_DOS,
+  E_SCANNER,
+  E_NONE,
+  
+}

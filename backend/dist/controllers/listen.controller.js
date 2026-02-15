@@ -15,11 +15,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ListenController = void 0;
 const common_1 = require("@nestjs/common");
 const listen_service_1 = require("../services/listen.service");
+const listen_analyzer_1 = require("../services/listen.analyzer");
 let ListenController = class ListenController {
     listenService;
-    constructor(listenService) {
+    analyzerService;
+    constructor(listenService, analyzerService) {
         this.listenService = listenService;
+        this.analyzerService = analyzerService;
         this.listenService.setWatchFilePath("/etc/nginx/logs/access.log");
+        this.analyzerService.setAnalyzeIntervalS(2);
     }
     accessLog() {
         return this.listenService.db.runSQLQuery("SELECT * FROM nginxlogs");
@@ -53,6 +57,6 @@ __decorate([
 ], ListenController.prototype, "runCustomSQL", null);
 exports.ListenController = ListenController = __decorate([
     (0, common_1.Controller)(),
-    __metadata("design:paramtypes", [listen_service_1.ListenService])
+    __metadata("design:paramtypes", [listen_service_1.ListenService, listen_analyzer_1.AnalyzerService])
 ], ListenController);
 //# sourceMappingURL=listen.controller.js.map

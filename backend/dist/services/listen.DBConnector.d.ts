@@ -14,5 +14,6 @@ export declare class DBConnector implements IDBConnector {
     addTuple(log: NGINXLog): Promise<boolean>;
     addAnalysisTuple(log: AnalysisEntry): Promise<boolean>;
     runSQLQuery(query: string): Promise<any[]>;
+    runSQLParameterizedQuery(query: string, params?: any[]): Promise<any[]>;
     checkIfTableExists(pool: Pool, name: string): Promise<boolean>;
 }

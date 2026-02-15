@@ -145,6 +145,16 @@ export class DBConnector implements IDBConnector {
     return r.rows;
     
   }
+
+  async runSQLParameterizedQuery(
+    query: string,
+    params: any[] = [],
+  ): Promise<any[]> {
+    
+    assert(this.pool != null, "Pool may not be initialized!!!");
+    const r = await this.pool.query(query, params);
+    return r.rows;
+  }
   
   async checkIfTableExists(pool:Pool, name:string): Promise<boolean> {
 

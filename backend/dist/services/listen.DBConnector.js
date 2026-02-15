@@ -116,6 +116,11 @@ let DBConnector = class DBConnector {
         const r = await this.pool.query(query);
         return r.rows;
     }
+    async runSQLParameterizedQuery(query, params = []) {
+        (0, assert_1.default)(this.pool != null, "Pool may not be initialized!!!");
+        const r = await this.pool.query(query, params);
+        return r.rows;
+    }
     async checkIfTableExists(pool, name) {
         const r = await pool.query(`SELECT to_regclass($1) IS NOT NULL AS exists`, [`public.${name}`]);
         return r.rows[0].exists === true;
