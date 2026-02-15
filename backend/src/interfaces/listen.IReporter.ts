@@ -1,4 +1,4 @@
-import { ReportBody } from "src/classes/listen.ReportBody.ts~";
+import { ReportBody } from "src/classes/listen.ReportBody";
 
 export interface IReporter {
 

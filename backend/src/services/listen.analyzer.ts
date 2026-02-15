@@ -4,7 +4,7 @@ import { DBConnector } from "./listen.DBConnector";
 import { AnalysisEntry } from "src/classes/listen.AnalysisEntry";
 import { AnalyzeResult } from "src/classes/listen.AnalyzeResult";
 import { EConvictionResult } from "src/classes/listen.EConvictionResult";
-import { AbuseIPDBreporter } from "./listen.reporter.ts~";
+import { AbuseIPDBreporter } from "./listen.reporter";
 import { ReportBody } from "src/classes/listen.ReportBody";
 import { NGINXLog } from "src/classes/listen.NGINXLog";
 import assert from "assert";
