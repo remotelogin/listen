@@ -3,36 +3,57 @@ import ListLast5Logs from "./ListLast5Logs";
 import ListAnalysisOfLogs from "./ListAnalysisOfLogs";
 import ListLastConvicted from "./ListLastConvicted";
 import StoredLogCount from "./StoredLogCount";
+import {controlPanelStyle} from '../styling/PanelStyle'
 
-import { floatingButton, buttonColors, pulseAnimation } from "../styling/ButtonStyle";
+
+import { buttonColors, pulseAnimation, floatingButtonInner } from "../styling/ButtonStyle";
+import { floatingPanelLabel } from "../styling/PanelStyle";
 
 function AutoRefreshButton() {
-	const [autoRefresh, setAutoRefresh] = useState(true);
-
-	const toggleAutoRefresh = () => setAutoRefresh(!autoRefresh);
-
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [excludeReferer, setExcludeReferer] = useState(true);
+  
+  const toggleAutoRefresh = () => setAutoRefresh(!autoRefresh);
+  const toggleExcludeReferer = () => setExcludeReferer(!excludeReferer);
+  
 	return (
 		<div style={{ padding: '1em' }}>
 			<StoredLogCount autoRefresh={autoRefresh} />
 			<h3>Last 5 processed requests to server and associated analysis logs.</h3>
-			<ListLast5Logs autoRefresh={autoRefresh} />
+	    <ListLast5Logs autoRefresh={autoRefresh} excludeReferer={excludeReferer} />
 			<br />
 			<ListAnalysisOfLogs autoRefresh={autoRefresh} />
 			<br />
 			<h3>Last 5 malicious requests to server.</h3>
 			<ListLastConvicted autoRefresh={autoRefresh} />
 
-			<button
-				onClick={toggleAutoRefresh}
-				style={{
-					...floatingButton,
-					backgroundColor: autoRefresh ? buttonColors.on : buttonColors.off,
-					animation: autoRefresh ? 'pulse 2s ease-in-out infinite' : 'none',
-				}}
-			>
-				{autoRefresh ? 'ON' : 'OFF'}
-			</button>
+	    <div style={controlPanelStyle}>
+				<div style={floatingPanelLabel}>Auto Refresh</div>
+	    
+				<button
+					onClick={toggleAutoRefresh}
+					style={{
+						...floatingButtonInner,
+						backgroundColor: autoRefresh ? buttonColors.on : buttonColors.off,
+						animation: autoRefresh ? 'pulse 2s ease-in-out infinite' : 'none',
+						marginBottom: '0.5em'
+					}}
+				>
+					{autoRefresh ? 'ON' : 'OFF'}
+				</button>
 
+				<div style={floatingPanelLabel}>Include Panel</div>
+
+				<button
+					onClick={toggleExcludeReferer}
+					style={{
+						...floatingButtonInner,
+						backgroundColor: excludeReferer ? buttonColors.off : buttonColors.on,
+					}}
+				>
+					{excludeReferer ? 'ON' : 'OFF'}
+				</button>
+			</div>
 			<style>{pulseAnimation}</style>
 		</div>
 	);

@@ -9,16 +9,35 @@ const runCustomSQL = async ({ queryKey }: { queryKey: [string, string] }) => {
 };
 
 interface Props {
-	autoRefresh: boolean;
+  autoRefresh: boolean;
+  excludeReferer: boolean;
 }
 
-function ListLast5Logs({ autoRefresh }: Props) {
+function ListLast5Logs({ autoRefresh, excludeReferer }: Props) {
 
-	const sqlQuery =
-		`SELECT ts AS "Time", remote_addr AS "Client IP", request_method AS "Method", request_uri AS "URI", status AS "Status", body_bytes_sent AS "Bytes Sent", uuid AS "Internal ID", upstream_addr AS "Upstream Server", upstream_status AS "Upstream Status", h_user_agent AS "User Agent", h_referer AS "Referer" FROM nginxlogs ORDER BY ts DESC LIMIT 5;`;
-
+  const sqlQuery =
+    `SELECT ts AS "Time", remote_addr AS "Client IP", request_method AS "Method", request_uri AS "URI", status AS "Status", body_bytes_sent AS "Bytes Sent", uuid AS "Internal ID", upstream_addr AS "Upstream Server", upstream_status AS "Upstream Status", h_user_agent AS "User Agent", h_referer AS "Referer" FROM nginxlogs ORDER BY ts DESC LIMIT 5;`;
+const sqlQueryNoReferer =
+    `SELECT
+ts AS "Time",
+remote_addr AS "Client IP",
+request_method AS "Method",
+request_uri AS "URI",
+status AS "Status",
+body_bytes_sent AS "Bytes Sent",
+uuid AS "Internal ID",
+upstream_addr AS "Upstream Server",
+upstream_status AS "Upstream Status",
+h_user_agent AS "User Agent",
+h_referer AS "Referer"
+FROM nginxlogs
+WHERE h_referer <> '"https://gamma.pm/panel/"'
+OR h_referer IS NULL
+ORDER BY ts DESC
+LIMIT 5;`;
+  
 	const { data, isLoading, error } = useQuery({
-		queryKey: ['customSQL', sqlQuery],
+	  queryKey: ['customSQL', excludeReferer ? sqlQuery : sqlQueryNoReferer],
 		queryFn: runCustomSQL,
 		refetchInterval: autoRefresh ? 2000 : false,
 		enabled: autoRefresh,

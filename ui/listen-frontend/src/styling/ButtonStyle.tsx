@@ -33,6 +33,22 @@ export const floatingButton: CSSProperties = {
   overflow: 'hidden',
 };
 
+export const floatingButtonInner: CSSProperties = {
+  width: '60px',
+  height: '60px',
+  borderRadius: '50%',
+  border: 'none',
+  color: '#fff',
+  fontWeight: 'bold',
+  fontSize: '0.9rem',
+  cursor: 'pointer',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+  transition: 'background 0.3s ease',
+};
+
 export const progressContainer: CSSProperties = {
   position: 'absolute',
   bottom: 0,
