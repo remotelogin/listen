@@ -75,10 +75,10 @@ const Orb: React.FC = () => {
   };
 
   return (
-    <div ref={orbRef} style={orbStyle}>
+      <div ref={orbRef} style={orbStyle}>
       <div style={beforeStyle} />
       <div style={afterStyle} />
-    </div>
+      </div>
   );
 };
 

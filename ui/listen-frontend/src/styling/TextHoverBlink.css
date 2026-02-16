@@ -1,0 +1,24 @@
+@keyframes smoothBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+.smooth-blink-hover {
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.smooth-blink-hover:hover {
+  animation: smoothBlink 1.0s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smooth-blink-hover:hover {
+    animation: none;
+    opacity: 0.7;
+  }
+}
