@@ -16,7 +16,7 @@ interface Props {
 function ListLast5Logs({ autoRefresh, excludeReferer }: Props) {
 
   const sqlQuery =
-    `SELECT ts AS "Time", remote_addr AS "Client IP", request_method AS "Method", request_uri AS "URI", status AS "Status", body_bytes_sent AS "Bytes Sent", uuid AS "Internal ID", upstream_addr AS "Upstream Server", upstream_status AS "Upstream Status", h_user_agent AS "User Agent", h_referer AS "Referer" FROM nginxlogs ORDER BY ts DESC LIMIT 5;`;
+    `SELECT ts AS "Time", remote_addr AS "Client IP", request_method AS "Method", request_uri AS "URI", status AS "Status", body_bytes_sent AS "Bytes Sent", uuid AS "Internal ID", upstream_status AS "Upstream Status", h_user_agent AS "User Agent", h_referer AS "Referer" FROM nginxlogs ORDER BY ts DESC LIMIT 5;`;
 const sqlQueryNoReferer =
     `SELECT
 ts AS "Time",
@@ -26,7 +26,6 @@ request_uri AS "URI",
 status AS "Status",
 body_bytes_sent AS "Bytes Sent",
 uuid AS "Internal ID",
-upstream_addr AS "Upstream Server",
 upstream_status AS "Upstream Status",
 h_user_agent AS "User Agent",
 h_referer AS "Referer"
@@ -61,7 +60,7 @@ LIMIT 5;`;
 	const headers: string[] = Object.keys(data[0]);
 
 	return (
-		<div>
+	  <div style={{width: '100%'}}>
 			<table style={tableStyle}>
 				<thead>
 					<tr>

@@ -3,8 +3,9 @@ import AutoRefreshButton from './components/AutoRefreshButton'
 
 function App() {
 
-	return (<>
-		<AutoRefreshButton />
+  return (<>
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+	  <AutoRefreshButton />
 	</>)
 
 }

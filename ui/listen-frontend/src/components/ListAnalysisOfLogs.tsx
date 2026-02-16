@@ -10,9 +10,10 @@ const runCustomSQL = async ({ queryKey }: { queryKey: [string, string] }) => {
 
 interface Props {
 	autoRefresh: boolean;
+  excludeReferer: boolean;
 }
 
-function ListAnalysisOfLogs({ autoRefresh }: Props) {
+function ListAnalysisOfLogs({ autoRefresh, excludeReferer }: Props) {
 	const sqlQuery =
 		`SELECT
 uuid        AS "Internal ID",
@@ -25,9 +26,27 @@ FROM analysis_log
 ORDER BY created_at DESC
 LIMIT 5;`;
 
-	const { data, isLoading, error } = useQuery({
-		queryKey: ['customSQL', sqlQuery],
-		queryFn: runCustomSQL,
+  const sqlQueryNoReferer =
+		`SELECT
+  a.uuid        AS "Internal ID",
+  a.processed   AS "Processed",
+  a.convicted   AS "Convicted",
+  a.reason      AS "Reason",
+  a.details     AS "Details",
+  a.created_at  AS "Created At"
+FROM analysis_log a
+JOIN nginxlogs n ON n.uuid = a.uuid
+WHERE (
+  n.h_referer NOT LIKE '%gamma.pm/panel%'
+  OR n.h_referer IS NULL
+)
+ORDER BY a.created_at DESC
+LIMIT 5;`;
+
+  
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['customSQL', excludeReferer? sqlQuery : sqlQueryNoReferer],
+    queryFn: runCustomSQL,
 		refetchInterval: autoRefresh ? 2000 : false,
 		enabled: autoRefresh,
 	});

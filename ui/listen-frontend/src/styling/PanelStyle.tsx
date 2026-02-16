@@ -30,7 +30,7 @@ export const floatingPanel: CSSProperties = {
   right: '20px',
   padding: '12px 14px',
   borderRadius: '14px',
-  background: 'linear-gradient(145deg, #1f2937, #0f172a)',
+  background: 'linear-gradient(180deg, #1b1f2a, #151821)',
   boxShadow: '0 10px 28px rgba(0,0,0,0.45)',
   display: 'flex',
   flexDirection: 'column',
