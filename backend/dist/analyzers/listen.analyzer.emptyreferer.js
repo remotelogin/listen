@@ -15,7 +15,7 @@ class AnalyzerEmptyReferer {
     async analyzeRecord(record) {
         let logEntry = await this.db.getNGINXLogFromUUID(record.uuid);
         (0, assert_1.default)(logEntry != null, "Could not fetch log entry!!! Database state might be corrupt!");
-        if (logEntry.h_referer == "-") {
+        if (logEntry.h_referer == '"-"') {
             console.log(`empty referer. Will not happen to normal user...`);
             return new listen_AnalyzeResult_1.AnalyzeResult(true, listen_EConvictionResult_1.EConvictionResult.E_ABUSE, "Detected empty referer, indicating web scraping / abusive scanning with UA: " + logEntry.h_user_agent + " and uri: " + logEntry.uri);
         }

@@ -11,6 +11,7 @@ export declare class AnalyzerService implements OnModuleInit, OnModuleDestroy {
     private timeout;
     private analyzers;
     constructor(db: DBConnector, abuseReporter: AbuseIPDBreporter);
+    private sleep;
     setAnalyzeIntervalS(newSeconds: number): void;
     registerAnalyzer(analyzer: IAnalyzeImplementation): void;
     getAllAnalyzers(): IAnalyzeImplementation[];

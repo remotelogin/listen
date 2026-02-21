@@ -55,7 +55,10 @@ let AbuseIPDBreporter = class AbuseIPDBreporter {
         }
         const data = await response.json();
         console.log("AbuseIPDB response:", data);
-        return data;
+        if (response.status == 200)
+            return true;
+        else
+            return false;
     }
 };
 exports.AbuseIPDBreporter = AbuseIPDBreporter;

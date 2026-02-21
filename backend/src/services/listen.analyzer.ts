@@ -36,12 +36,17 @@ details    = $5
 WHERE uuid = $1;
 `;
   
-  private timer?: NodeJS.Timeout;
   private timeout:number = 1000;
 
+  private running: boolean = true;
+  
   private analyzers: IAnalyzeImplementation[] = [];
 
   constructor(public readonly db :DBConnector, private readonly abuseReporter: AbuseIPDBreporter) {}
+
+  private sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
   
   public setAnalyzeIntervalS(newSeconds:number) {
     this.timeout = newSeconds*1000;
@@ -56,14 +61,21 @@ WHERE uuid = $1;
   }
   
   onModuleInit() {
-    this.timer = setInterval(() => {
-      this.run();
-    }, this.timeout);
+    this.loop();
   }
 
   onModuleDestroy() {
-    if (this.timer) {
-      clearInterval(this.timer);
+    this.running = false;
+  }
+  
+  private async loop() {
+    while (this.running) {
+      try {
+	await this.run();
+      } catch (err) {
+	console.error("Analyzer loop error:", err);
+      }
+      await this.sleep(this.timeout);
     }
   }
 
@@ -83,7 +95,6 @@ WHERE uuid = $1;
       details,
     ]);
   }
-  
   
   private async run() {
 
@@ -111,19 +122,23 @@ WHERE uuid = $1;
 	    case EConvictionResult.E_SCANNER:{ stringReason = "19"; break; }
 	    case EConvictionResult.E_SCRAPER:{ stringReason = "19"; break; }
 	  }
-	  this.patchAnalysisEntry(record.uuid,true,true,stringReason,result.notes);
 	  console.log("Detected abuse: " + record.uuid + "reporting...");
 
 	  let logEntry:NGINXLog|null = await this.db.getNGINXLogFromUUID(record.uuid);
 	  assert(logEntry!=null, "Could not fetch log entry!!! Database state might be corrupt!");
 	  
-	  this.abuseReporter.reportToAPI(new ReportBody(logEntry.realip,result.notes,stringReason));
-
-
-	  break;
+	  if(await this.abuseReporter.reportToAPI(new ReportBody(logEntry.realip,result.notes,stringReason))) {
+	    await this.patchAnalysisEntry(record.uuid,true,true,stringReason,result.notes);//processed and reported detected as bot
+	    await this.sleep(500);
+	    console.log("reported a detected bot. Sleeping 500ms to prevent spam.")
+	    break;
+	  } else {
+	    console.log("reported a detected bot but API returned non success status code... retrying on next interval...")
+	    break;
+	  };
 	} else {
 	  // simply update processed
-	  this.patchAnalysisEntry(record.uuid,true,false,"legitimate request","legitimate request");
+	  await this.patchAnalysisEntry(record.uuid,true,false,"legitimate request","legitimate request");
 	}
 	
       }

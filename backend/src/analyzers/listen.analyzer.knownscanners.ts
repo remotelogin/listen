@@ -89,7 +89,7 @@ export class AnalyzerKnownScanners implements IAnalyzeImplementation {
     assert(logEntry!=null, "Could not fetch log entry!!! Database state might be corrupt!");
     
     if(this.checkSubstring(logEntry.h_user_agent, this.KNOWN_SCRAPER_UA_SUBSTRINGS))
-      return new AnalyzeResult(true,EConvictionResult.E_SCANNER,"Automated scanning with useragent: "+ logEntry.h_user_agent+" and uri: " + logEntry.uri);
+      return new AnalyzeResult(true,EConvictionResult.E_SCANNER,"Automated scanning with known malicious useragent: "+ logEntry.h_user_agent+" and uri: " + logEntry.uri);
     else
       return new AnalyzeResult(false,EConvictionResult.E_NONE, "No offense detected!");
     

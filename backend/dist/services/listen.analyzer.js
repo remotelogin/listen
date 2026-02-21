@@ -50,6 +50,9 @@ WHERE uuid = $1;
         this.db = db;
         this.abuseReporter = abuseReporter;
     }
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
     setAnalyzeIntervalS(newSeconds) {
         this.timeout = newSeconds * 1000;
     }
@@ -118,12 +121,20 @@ WHERE uuid = $1;
                             break;
                         }
                     }
-                    this.patchAnalysisEntry(record.uuid, true, true, stringReason, result.notes);
                     console.log("Detected abuse: " + record.uuid + "reporting...");
                     let logEntry = await this.db.getNGINXLogFromUUID(record.uuid);
                     (0, assert_1.default)(logEntry != null, "Could not fetch log entry!!! Database state might be corrupt!");
-                    this.abuseReporter.reportToAPI(new listen_ReportBody_1.ReportBody(logEntry.realip, result.notes, stringReason));
-                    break;
+                    if (await this.abuseReporter.reportToAPI(new listen_ReportBody_1.ReportBody(logEntry.realip, result.notes, stringReason))) {
+                        this.patchAnalysisEntry(record.uuid, true, true, stringReason, result.notes);
+                        await this.sleep(500);
+                        console.log("reported a detected bot. Sleeping 500ms to prevent spam.");
+                        break;
+                    }
+                    else {
+                        console.log("reported a detected bot but API returned non success status code... retrying on next interval...");
+                        break;
+                    }
+                    ;
                 }
                 else {
                     this.patchAnalysisEntry(record.uuid, true, false, "legitimate request", "legitimate request");

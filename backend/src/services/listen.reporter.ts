@@ -59,7 +59,10 @@ export class AbuseIPDBreporter implements IReporter {
     
     const data = await response.json();
     console.log("AbuseIPDB response:", data);
-    return data;
+    if(response.status == 200)
+      return true;
+    else
+      return false;
   }
   
 }
