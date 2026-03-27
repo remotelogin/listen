@@ -7,8 +7,8 @@ export declare class AnalyzerService implements OnModuleInit, OnModuleDestroy {
     private readonly abuseReporter;
     private readonly fetchSqlQuery;
     private readonly patchSqlQuery;
-    private timer?;
     private timeout;
+    private running;
     private analyzers;
     constructor(db: DBConnector, abuseReporter: AbuseIPDBreporter);
     private sleep;
@@ -17,6 +17,7 @@ export declare class AnalyzerService implements OnModuleInit, OnModuleDestroy {
     getAllAnalyzers(): IAnalyzeImplementation[];
     onModuleInit(): void;
     onModuleDestroy(): void;
+    private loop;
     patchAnalysisEntry(uuid: string, processed: boolean, convicted: boolean, reason: string | null, details: string | null): Promise<void>;
     private run;
 }

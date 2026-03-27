@@ -19,7 +19,7 @@ processed   AS "processed",
 convicted   AS "convicted",
 reason      AS "reason",
 details     AS "details",
-created_at  AS "crated_at"
+created_at  AS "created_at"
 FROM analysis_log
 WHERE processed IS DISTINCT FROM TRUE
 ORDER BY created_at DESC
@@ -109,7 +109,12 @@ WHERE uuid = $1;
     
     console.log(`found ${newRecords.length} records. Running on ${this.analyzers.length} analyzers!`);
     for(let record of newRecords ) {
+      let finalConviction: boolean = false;
       for(let analyzer of this.analyzers) {		  
+
+	if(finalConviction)
+	  break;
+
 	let result: AnalyzeResult = await analyzer.analyzeRecord(record);
 
 	if(result.convicted) {
@@ -126,21 +131,24 @@ WHERE uuid = $1;
 
 	  let logEntry:NGINXLog|null = await this.db.getNGINXLogFromUUID(record.uuid);
 	  assert(logEntry!=null, "Could not fetch log entry!!! Database state might be corrupt!");
-	  
-	  if(await this.abuseReporter.reportToAPI(new ReportBody(logEntry.realip,result.notes,stringReason))) {
+
+	  finalConviction = true;
+	  await this.sleep(500);
+
+	  let apiResponse: Response = (await this.abuseReporter.reportToAPI(new ReportBody(logEntry.realip,result.notes,stringReason)));
+	  if(apiResponse.status == 200) {
 	    await this.patchAnalysisEntry(record.uuid,true,true,stringReason,result.notes);//processed and reported detected as bot
-	    await this.sleep(500);
-	    console.log("reported a detected bot. Sleeping 500ms to prevent spam.")
+	    console.log("reported a detected bot successfully. Sleeping 500ms to prevent spam.")
 	    break;
 	  } else {
-	    console.log("reported a detected bot but API returned non success status code... retrying on next interval...")
+	    console.log("reported a detected bot but API returned non success status code..." + apiResponse.status + "and response: " + apiResponse.body);
 	    break;
 	  };
-	} else {
-	  // simply update processed
-	  await this.patchAnalysisEntry(record.uuid,true,false,"legitimate request","legitimate request");
-	}
-	
+	} 
+      }
+      if(!finalConviction) {
+	// no analyzer found it sus? simply update processed
+	await this.patchAnalysisEntry(record.uuid,true,false,"legitimate request","legitimate request");
       }
     }
   }

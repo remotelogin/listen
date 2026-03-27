@@ -6,5 +6,5 @@ export declare class AbuseIPDBreporter implements IReporter {
     private recentlyReported;
     constructor();
     onModuleInit(): Promise<void>;
-    reportToAPI(report: ReportBody): Promise<boolean>;
+    reportToAPI(report: ReportBody): Promise<Response>;
 }

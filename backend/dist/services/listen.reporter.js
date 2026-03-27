@@ -8,14 +8,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AbuseIPDBreporter = void 0;
 const common_1 = require("@nestjs/common");
 const node_fs_1 = require("node:fs");
+const lru_cache_1 = __importDefault(require("lru-cache"));
 let AbuseIPDBreporter = class AbuseIPDBreporter {
     apiToken = "";
     credLocation = "";
-    recentlyReported = new Map();
+    recentlyReported = new lru_cache_1.default({
+        max: 10000,
+        ttl: 15 * 60 * 1000
+    });
     constructor() {
         this.credLocation = ".credentials/api.key";
     }
@@ -30,7 +37,7 @@ let AbuseIPDBreporter = class AbuseIPDBreporter {
         const now = Date.now();
         const last = this.recentlyReported.get(report.ip);
         if (last && now - last < 15 * 60 * 1000) {
-            return false;
+            return new Response();
         }
         this.recentlyReported.set(report.ip, now);
         const url = `https://api.abuseipdb.com/api/v2/report`;
@@ -51,14 +58,14 @@ let AbuseIPDBreporter = class AbuseIPDBreporter {
         if (!response.ok) {
             const text = await response.text();
             console.log(`Failed to report IP: ${response.status} - ${text}`);
-            return false;
+            return new Response();
         }
         const data = await response.json();
         console.log("AbuseIPDB response:", data);
         if (response.status == 200)
-            return true;
+            return response;
         else
-            return false;
+            return new Response();
     }
 };
 exports.AbuseIPDBreporter = AbuseIPDBreporter;

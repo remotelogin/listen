@@ -29,7 +29,7 @@ processed   AS "processed",
 convicted   AS "convicted",
 reason      AS "reason",
 details     AS "details",
-created_at  AS "crated_at"
+created_at  AS "created_at"
 FROM analysis_log
 WHERE processed IS DISTINCT FROM TRUE
 ORDER BY created_at DESC
@@ -43,8 +43,8 @@ reason     = $4,
 details    = $5
 WHERE uuid = $1;
 `;
-    timer;
     timeout = 1000;
+    running = true;
     analyzers = [];
     constructor(db, abuseReporter) {
         this.db = db;
@@ -63,13 +63,20 @@ WHERE uuid = $1;
         return this.analyzers;
     }
     onModuleInit() {
-        this.timer = setInterval(() => {
-            this.run();
-        }, this.timeout);
+        this.loop();
     }
     onModuleDestroy() {
-        if (this.timer) {
-            clearInterval(this.timer);
+        this.running = false;
+    }
+    async loop() {
+        while (this.running) {
+            try {
+                await this.run();
+            }
+            catch (err) {
+                console.error("Analyzer loop error:", err);
+            }
+            await this.sleep(this.timeout);
         }
     }
     async patchAnalysisEntry(uuid, processed, convicted, reason, details) {
@@ -91,7 +98,10 @@ WHERE uuid = $1;
         }
         console.log(`found ${newRecords.length} records. Running on ${this.analyzers.length} analyzers!`);
         for (let record of newRecords) {
+            let finalConviction = false;
             for (let analyzer of this.analyzers) {
+                if (finalConviction)
+                    break;
                 let result = await analyzer.analyzeRecord(record);
                 if (result.convicted) {
                     let stringReason = "";
@@ -124,21 +134,23 @@ WHERE uuid = $1;
                     console.log("Detected abuse: " + record.uuid + "reporting...");
                     let logEntry = await this.db.getNGINXLogFromUUID(record.uuid);
                     (0, assert_1.default)(logEntry != null, "Could not fetch log entry!!! Database state might be corrupt!");
-                    if (await this.abuseReporter.reportToAPI(new listen_ReportBody_1.ReportBody(logEntry.realip, result.notes, stringReason))) {
-                        this.patchAnalysisEntry(record.uuid, true, true, stringReason, result.notes);
-                        await this.sleep(500);
-                        console.log("reported a detected bot. Sleeping 500ms to prevent spam.");
+                    finalConviction = true;
+                    await this.sleep(500);
+                    let apiResponse = (await this.abuseReporter.reportToAPI(new listen_ReportBody_1.ReportBody(logEntry.realip, result.notes, stringReason)));
+                    if (apiResponse.status == 200) {
+                        await this.patchAnalysisEntry(record.uuid, true, true, stringReason, result.notes);
+                        console.log("reported a detected bot successfully. Sleeping 500ms to prevent spam.");
                         break;
                     }
                     else {
-                        console.log("reported a detected bot but API returned non success status code... retrying on next interval...");
+                        console.log("reported a detected bot but API returned non success status code..." + apiResponse.status + "and response: " + apiResponse.body);
                         break;
                     }
                     ;
                 }
-                else {
-                    this.patchAnalysisEntry(record.uuid, true, false, "legitimate request", "legitimate request");
-                }
+            }
+            if (!finalConviction) {
+                await this.patchAnalysisEntry(record.uuid, true, false, "legitimate request", "legitimate request");
             }
         }
     }

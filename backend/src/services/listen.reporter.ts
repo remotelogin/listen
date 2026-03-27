@@ -2,13 +2,18 @@ import { Injectable } from "@nestjs/common";
 import { IReporter } from "src/interfaces/listen.IReporter";
 import {promises as fs} from 'node:fs';
 import { ReportBody } from "src/classes/listen.ReportBody";
+import LRU from 'lru-cache';
 
 @Injectable()
 export class AbuseIPDBreporter implements IReporter {
 
   private apiToken: string = "";
   private credLocation: string = "";
-  private recentlyReported = new Map<string, number>();
+
+  private recentlyReported = new LRU<string, number>({
+    max: 10000,
+    ttl: 15 * 60 * 1000
+  });
   
   constructor() {
     this.credLocation = ".credentials/api.key";
@@ -21,7 +26,7 @@ export class AbuseIPDBreporter implements IReporter {
     this.apiToken = credentials_map[0].split(":")[1].trim();
   }
   
-  async reportToAPI(report: ReportBody): Promise<boolean> {
+  async reportToAPI(report: ReportBody): Promise<Response> {
     if (!this.apiToken) throw new Error("Missing API key");
 
     const now = Date.now();
@@ -29,7 +34,7 @@ export class AbuseIPDBreporter implements IReporter {
     
     //prevent spamming
     if (last && now - last < 15 * 60 * 1000) {
-      return false;
+      return new Response();
     }
     this.recentlyReported.set(report.ip, now);
     
@@ -37,7 +42,7 @@ export class AbuseIPDBreporter implements IReporter {
 
     console.log(`reporting as : ${report.ip} ip, ${report.category} category, ${report.reason} comment`)
     
-    const response = await fetch(url, {
+    const response: Response = await fetch(url, {
       method: "POST",
       headers: {
 	"Accept": "application/json",
@@ -54,15 +59,15 @@ export class AbuseIPDBreporter implements IReporter {
     if (!response.ok) {
       const text = await response.text();
       console.log(`Failed to report IP: ${response.status} - ${text}`);
-      return false;
+      return new Response();
     }
     
     const data = await response.json();
     console.log("AbuseIPDB response:", data);
     if(response.status == 200)
-      return true;
+      return response;
     else
-      return false;
+      return new Response();
   }
   
 }
